@@ -7,7 +7,8 @@ var active_shape     # currently active (falling) shape
 # var gravity = 0.0156 # 0.0156G
 var gravity = 0.04   # 0.0156G
 var gravity_sum = 0  # elapsed gravity since last downwards move
-var das_delay = 1    # input delay in frames
+var das_delay = 8    # input delay in frames
+var das_elapsed = 0  # elapsed time since last input
 
 var shape_map = {
     'I': [Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0), Vector2(2, 0)],
@@ -28,19 +29,19 @@ func _ready():
 func _process(delta):
     self.get_node('Label').set_text("FPS %d" % Engine.get_frames_per_second())
     self.gravity_sum += gravity
-    self.das_delay += 1
+    self.das_elapsed += 1
 
     var left = Input.is_action_pressed("left")
     var right = Input.is_action_pressed("right")
     var space = Input.is_action_pressed("space")
 
-    if self.das_delay >= 10:
+    if self.das_elapsed >= self.das_delay:
         if left and not right:
-            self.das_delay = 0
+            self.das_elapsed = 0
             if self._is_active_shape_movable(-1, 0):
                 self._move_active_shape(-1, 0)
         elif right and not left:
-            self.das_delay = 0
+            self.das_elapsed = 0
             if self._is_active_shape_movable(1, 0):
                 self._move_active_shape(1, 0)
 
