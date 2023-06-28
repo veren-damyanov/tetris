@@ -11,11 +11,13 @@ func _ready():
     var blocks = self.get_children()
     var color = self._pick_random_color()
     for i in range(4):
-        blocks[i].position = coords[i] * globals.TILE_SIZE
+        blocks[i].position = self.coords[i] * self.globals.TILE_SIZE
         blocks[i].get_node('Sprite2D').set_modulate(color)
 
-#func _process(delta):
-#	pass
+func _adjust_positions():
+    var blocks = self.get_children()
+    for i in range(4):
+        blocks[i].position = self.coords[i] * self.globals.TILE_SIZE
 
 func _pick_random_color():
     var options = [
@@ -24,11 +26,14 @@ func _pick_random_color():
         Color8(128, 0, 128),   # purple
         Color8(0, 200, 0),     # green
         Color8(200, 0, 0),     # red
-        Color8(65, 65, 240),     # blue
+        Color8(65, 65, 240),   # blue
         Color8(255, 127, 0),   # orange
         Color8(150, 150, 150), # gray
     ]
     return options[randi() % options.size()]
+
+func get_size():
+    return self.size
 
 func set_tpos(tpos):
     self.tpos = tpos
@@ -39,9 +44,13 @@ func get_tpos():
 func get_coords():
     return self.coords
 
+func set_coords(new_coords):
+    self.coords = new_coords
+    self._adjust_positions()
+
 func init(type, coords):
     self.type = type
     self.coords = coords
     self.size = 0
-    if self.type == 'I':
+    if self.type in ['I', 'O']:
         self.size = 1

@@ -7,7 +7,7 @@ var active_shape     # currently active (falling) shape
 # var gravity = 0.0156 # 0.0156G
 var gravity = 0.04   # 0.0156G
 var gravity_sum = 0  # elapsed gravity since last downwards move
-var das_delay = 8    # input delay in frames
+var das_delay = 10   # input delay in frames
 var das_elapsed = 0  # elapsed time since last input
 
 var shape_map = {
@@ -27,24 +27,28 @@ func _ready():
     self.add_child(self.active_shape)
 
 func _process(delta):
+    # initialize stuff
     self.get_node('Label').set_text("FPS %d" % Engine.get_frames_per_second())
     self.gravity_sum += gravity
     self.das_elapsed += 1
-
+    # collect input
     var left = Input.is_action_pressed("left")
     var right = Input.is_action_pressed("right")
     var space = Input.is_action_pressed("space")
-
+    # process input and move
     if self.das_elapsed >= self.das_delay:
-        if left and not right:
+        if left and not (right or space):
             self.das_elapsed = 0
             if self._is_active_shape_movable(-1, 0):
                 self._move_active_shape(-1, 0)
-        elif right and not left:
+        elif right and not (left or space):
             self.das_elapsed = 0
             if self._is_active_shape_movable(1, 0):
                 self._move_active_shape(1, 0)
-
+        elif space and not (left or right):
+            self.das_elapsed = 0
+            self._rotate_active_if_possible()
+    # process gravity
     if self.gravity_sum >= 1:
         self.gravity_sum = 0
         if self._is_active_shape_movable(0, 1):
@@ -53,6 +57,18 @@ func _process(delta):
             self._deactivate_current_shape()
             self.active_shape = self._new_active_shape()
             self.add_child(self.active_shape)
+
+func _rotate_active_if_possible():
+    var new_coords = []
+    var size = self.active_shape.get_size()
+    var tpos = self.active_shape.get_tpos()
+    for v in self.active_shape.get_coords():
+        var x = size - v.y
+        var y = v.x
+        if matrix[tpos.x+x][tpos.y+y] == 1:
+            return
+        new_coords.append(Vector2(x, y))
+    self.active_shape.set_coords(new_coords)
 
 func _new_active_shape():
     var shape = self._new_shape()
@@ -99,7 +115,6 @@ func _init_matrix():
             else:
                 self.matrix[i].append(0)
         self.matrix[i].append(1)
-    print(self.matrix)
 
 func _randomize():
     var options = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
