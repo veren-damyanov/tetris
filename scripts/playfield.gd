@@ -7,16 +7,17 @@ var globals            # for importing globals
 var matrix             # the board
 var active_shape       # the currently active (falling) shape
 var das_elapsed = 0    # time elapsed since last input
-var gravity = [0.01667, 0.021017, 0.026977, 0.035256, 0.04693, 0.06361, 0.0879, 0.1236, 0.1775, 0.2598, 0.388, 0.59, 0.92, 1.46, 2.36, 3.91, 6.61, 11.43, 20]
-# var gravity = 0.04     # gravity measured in tiles per frame # 0.0156G
-var gravity_fast = 0.4 # gravity increase when down button is held
+var gravity = [
+    0.01667, 0.021017, 0.026977, 0.035256, 0.04693,
+    0.06361, 0.0879,0.1236, 0.1775, 0.2598, 0.388,
+    0.59, 0.92, 1.46, 2.36, 3.91, 6.61, 11.43, 20
+]
 var gravity_sum = 0    # helper to keep track of gravity
 var fast_mode = false  # regulates when we use fast gravity
 var game_over = false  # game over flag
 var score = 0          # tracks the score
 var lines = 0          # tracks number of lines completed
 var level = 1          # tracks the level
-# var graveyard = []   # storage for inactive shapes
 
 var shape_map = {
     'I': [Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0), Vector2(2, 0)],
@@ -49,9 +50,6 @@ func _process(delta):
     self.get_node('Score').set_text("[center][b]%d[/b][/center]" % self.score)
     self.get_node('Level').set_text("[center][b]%d[/b][/center]" % self.level)
     self.get_node('Lines').set_text("[center][b]%d[/b][/center]" % self.lines)
-    # self.get_node('Label').set_text("FPS %d" % Engine.get_frames_per_second())
-    # var v = self._coords_from_position(self.active_shape.get_position())
-    # self.get_node('Label').set_text("x: %d, y: %d" % [v.x, v.y])
     if self.game_over:
         return
     # collect input
@@ -83,7 +81,7 @@ func _process(delta):
             self.fast_mode = true
     # process gravity
     if fast_mode:
-        self.gravity_sum += self.gravity_fast
+        self.gravity_sum += max(0.4, self.gravity[self.level-1] * 2)
     else:
         self.gravity_sum += self.gravity[self.level-1]
     if self.gravity_sum >= 1:
@@ -99,10 +97,61 @@ func _process(delta):
             self.active_shape = self._new_active_shape()
             self.add_child(self.active_shape)
 
+func _init_matrix():
+    self.matrix = []
+    for i in range(self.globals.FIELD_X+2):
+        self.matrix.append([])
+        for j in range(self.globals.FIELD_Y+1):
+            if i == 0 or i == self.globals.FIELD_X+1:
+                self.matrix[i].append([1, null])
+            else:
+                self.matrix[i].append([0, null])
+        self.matrix[i].append([1, null])
+
+func _coords_from_position(vector):
+    var x = (vector.x - globals.TILE_SIZE / 2) / self.globals.TILE_SIZE
+    var y = (vector.y - globals.TILE_SIZE / 2) / self.globals.TILE_SIZE
+    return Vector2(x, y)
+    
+func _position_from_coords(vector):
+    var x = globals.TILE_SIZE / 2 + globals.TILE_SIZE * vector.x
+    var y = globals.TILE_SIZE / 2 + globals.TILE_SIZE * vector.y
+    return Vector2(x, y)
+
+func _randomize():
+    var options = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
+    return options[randi() % options.size()]
+
+func _new_shape():
+    var shape = preload("res://shape.tscn").instantiate()
+    var type = self._randomize()
+    shape.init(type, self.shape_map[type], self.color_map[type])
+    return shape
+
+func _new_active_shape():
+    var shape = self._new_shape()
+    shape.set_position(self._position_from_coords(self.START_POSITION))
+    return shape
+
+func _is_active_shape_movable(dx, dy):
+    var matrix_pos = self._coords_from_position(self.active_shape.get_position())
+    var coords = self.active_shape.get_coords()
+    for v in coords:
+        var x = matrix_pos.x + v.x + dx
+        var y = matrix_pos.y + v.y + dy
+        if self.matrix[x][y][0] == 1:
+            return false
+    return true
+
+func _move_active_shape(dx, dy):
+    var matrix_pos = self._coords_from_position(self.active_shape.get_position())
+    matrix_pos.x += dx
+    matrix_pos.y += dy
+    self.active_shape.set_position(self._position_from_coords(matrix_pos))
+
 func _rotate_active_if_possible():
     var new_coords = []
     var size = self.active_shape.get_size()
-    # var tpos = self.active_shape.get_tpos()
     var matrix_pos = self._coords_from_position(self.active_shape.get_position())
     for v in self.active_shape.get_coords():
         var x = size - v.y
@@ -112,17 +161,9 @@ func _rotate_active_if_possible():
         new_coords.append(Vector2(x, y))
     self.active_shape.set_coords(new_coords)
 
-func _new_active_shape():
-    var shape = self._new_shape()
-    shape.set_position(self._position_from_coords(self.START_POSITION))
-    # shape.set_tpos(Vector2(5, 0))
-    return shape
-
 func _deactivate_current_shape():
-    # var tpos = self.active_shape.get_tpos()
     var matrix_pos = self._coords_from_position(self.active_shape.get_position())
     var coords = self.active_shape.get_coords()
-    # self.graveyard += self.active_shape.get_blocks()
     var blocks = self.active_shape.get_blocks()
     for i in range(coords.size()):
         var x = matrix_pos.x + coords[i].x
@@ -134,6 +175,15 @@ func _deactivate_current_shape():
         blocks[i].set_position(self._position_from_coords(Vector2(x, y)))
     self.active_shape.queue_free()
     self._clear_lines()
+
+func _move_block(block, dx, dy):
+    var v = self._coords_from_position(block.get_position())
+    self.matrix[v.x][v.y][0] = 0
+    self.matrix[v.x][v.y][1] = null
+    v.y += dy
+    block.set_position(self._position_from_coords(v))
+    self.matrix[v.x][v.y][0] = 1
+    self.matrix[v.x][v.y][1] = block
 
 func _clear_lines():
     var cleared_lines = []
@@ -152,18 +202,6 @@ func _clear_lines():
     if cleared_lines:
         self._update_stats(cleared_lines)
         self._settle_board(cleared_lines)
-#            for k in range(i, 0, -1):
-#                for l in range(1, self.globals.FIELD_X+1):
-#                    if self.matrix[l][k][1] == null:
-#                        continue
-#                    self._move_block(self.matrix[l][k][1], 0, 1)
-
-func _update_stats(lines):
-    var bases_map = { 1: 40, 2: 100, 3: 300, 4: 1200 }
-    var base = bases_map[lines.size()]
-    self.score += (self.level + 1) * base
-    self.lines += lines.size()
-    self.level = 1 + min(18, self.lines / 10)
 
 func _settle_board(cleared_lines):
     cleared_lines.sort()
@@ -181,83 +219,9 @@ func _settle_board(cleared_lines):
                 self._move_block(self.matrix[j][i][1], 0, q)
                 await get_tree().create_timer(0.008).timeout
 
-func _move_block(block, dx, dy):
-    var v = self._coords_from_position(block.get_position())
-    self.matrix[v.x][v.y][0] = 0
-    self.matrix[v.x][v.y][1] = null
-    v.y += dy
-    block.set_position(self._position_from_coords(v))
-    self.matrix[v.x][v.y][0] = 1
-    self.matrix[v.x][v.y][1] = block
-    
-
-#func _settle_board():
-#    for i in range(self.globals.FIELD_Y, 0, -1):
-#        for j in range(1, self.globals.FIELD_X+1):
-#            if self.matrix[j][i][1] != null:
-#                self._drop_block(self.matrix[j][i][1])
-#
-#func _drop_block(block):
-#    var v = self._coords_from_position(block.get_position())
-#    var lowest = v.y
-#    while lowest < 25:
-#        if self.matrix[v.x][lowest+1][0] == 1:
-#            break
-#        lowest += 1
-#    block.set_position(self._position_from_coords(Vector2(v.x, lowest)))
-#    self.matrix[v.x][v.y][0] = 0
-#    self.matrix[v.x][lowest][0] = 1
-    
-
-func _coords_from_position(vector):
-    var x = (vector.x - globals.TILE_SIZE / 2) / self.globals.TILE_SIZE
-    var y = (vector.y - globals.TILE_SIZE / 2) / self.globals.TILE_SIZE
-    return Vector2(x, y)
-    
-func _position_from_coords(vector):
-    var x = globals.TILE_SIZE / 2 + globals.TILE_SIZE * vector.x
-    var y = globals.TILE_SIZE / 2 + globals.TILE_SIZE * vector.y
-    return Vector2(x, y)
-
-func _is_active_shape_movable(dx, dy):
-    # var tpos = self.active_shape.get_tpos()
-    var matrix_pos = self._coords_from_position(self.active_shape.get_position())
-    var coords = self.active_shape.get_coords()
-    for v in coords:
-        var x = matrix_pos.x + v.x + dx
-        var y = matrix_pos.y + v.y + dy
-        if self.matrix[x][y][0] == 1:
-            return false
-    return true
-
-func _move_active_shape(dx, dy):
-    # var tpos = self.active_shape.get_tpos()
-    var matrix_pos = self._coords_from_position(self.active_shape.get_position())
-    matrix_pos.x += dx
-    matrix_pos.y += dy
-    # self.active_shape.set_tpos(matrix_pos)
-    # var x = globals.TILE_SIZE / 2 + globals.TILE_SIZE * matrix_pos.x
-    # var y = globals.TILE_SIZE / 2 + globals.TILE_SIZE * matrix_pos.y
-    self.active_shape.set_position(self._position_from_coords(matrix_pos))
-
-func _init_matrix():
-    self.matrix = []
-    for i in range(self.globals.FIELD_X+2):
-        self.matrix.append([])
-        for j in range(self.globals.FIELD_Y+1):
-            if i == 0 or i == self.globals.FIELD_X+1:
-                self.matrix[i].append([1, null])
-            else:
-                self.matrix[i].append([0, null])
-        self.matrix[i].append([1, null])
-    # print(matrix)
-
-func _randomize():
-    var options = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
-    return options[randi() % options.size()]
-
-func _new_shape():
-    var shape = preload("res://shape.tscn").instantiate()
-    var type = self._randomize()
-    shape.init(type, self.shape_map[type], self.color_map[type])
-    return shape
+func _update_stats(lines):
+    var bases_map = { 1: 40, 2: 100, 3: 300, 4: 1200 }
+    var base = bases_map[lines.size()]
+    self.score += (self.level + 1) * base
+    self.lines += lines.size()
+    self.level = 1 + min(18, self.lines / 10)
