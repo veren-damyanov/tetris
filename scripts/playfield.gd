@@ -31,8 +31,11 @@ func _ready():
 func _process(delta):
     # initialize stuff
     # self.get_node('Label').set_text("FPS %d" % Engine.get_frames_per_second())
-    var v = self.active_shape.get_position()
+    # var v = self.active_shape.get_position()
+    # self.get_node('Label').set_text("x: %d, y: %d" % [v.x, v.y])
+    var v = self._coords_from_position(self.active_shape.get_position())
     self.get_node('Label').set_text("x: %d, y: %d" % [v.x, v.y])
+
     # collect input
     var left = Input.is_action_pressed("left")
     var right = Input.is_action_pressed("right")
@@ -108,7 +111,7 @@ func _deactivate_current_shape():
     self._clear_lines()
 
 func _clear_lines():
-    for i in range(self.globals.FIELD_Y+1, 3, -1):
+    for i in range(self.globals.FIELD_Y, 3, -1):
         var line_full = true
         for j in range(1, self.globals.FIELD_X+1):
             if self.matrix[j][i][0] == 0:
@@ -116,8 +119,8 @@ func _clear_lines():
         if line_full == true:
             # print('line %d is full!' % i)
             for j in range(1, self.globals.FIELD_X+1):
-                self.matrix[j][i][0] = 1
-                # self.remove_child(self.matrix[j][i][1])
+                self.matrix[j][i][0] = 0
+                self.remove_child(self.matrix[j][i][1])
                 self.matrix[j][i][1] = null
 
 func _coords_from_position(vector):
@@ -131,12 +134,20 @@ func _position_from_coords(vector):
     return Vector2(x, y)
 
 func _is_active_shape_movable(dx, dy):
+    print(self.matrix)
     # var tpos = self.active_shape.get_tpos()
     var matrix_pos = self._coords_from_position(self.active_shape.get_position())
     var coords = self.active_shape.get_coords()
     for v in coords:
+#        print('==========')
+#        print(matrix_pos.y)
+#        print(v.y)
+#        print(dy)
         var x = matrix_pos.x + v.x + dx
         var y = matrix_pos.y + v.y + dy
+#        print(x)
+#        print(y)
+#        print(self.matrix[x][y][0])
         if self.matrix[x][y][0] == 1:
             return false
     return true
@@ -161,6 +172,7 @@ func _init_matrix():
             else:
                 self.matrix[i].append([0, null])
         self.matrix[i].append([1, null])
+    print(matrix)
 
 func _randomize():
     var options = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
