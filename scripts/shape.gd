@@ -4,7 +4,7 @@ var globals
 var type   # type of shape, e.g. J
 var coords # relative coords of the 4 blocks
 var size   # used for rotation
-var tpos  # position within field matrix
+# var tpos   # position within field matrix
 
 func _ready():
     globals = get_node("/root/globals")
@@ -32,14 +32,17 @@ func _pick_random_color():
     ]
     return options[randi() % options.size()]
 
+func get_blocks():
+    return self.get_children()
+
 func get_size():
     return self.size
 
-func set_tpos(tpos):
-    self.tpos = tpos
-
-func get_tpos():
-    return self.tpos
+#func set_tpos(tpos):
+#    self.tpos = tpos
+#
+#func get_tpos():
+#    return self.tpos
 
 func get_coords():
     return self.coords
