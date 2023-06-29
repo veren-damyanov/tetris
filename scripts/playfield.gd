@@ -28,6 +28,16 @@ var shape_map = {
     'Z': [Vector2(-1, -1), Vector2(0, -1), Vector2(0, 0), Vector2(1, 0)],
 }
 
+var color_map = {
+    'I': Color8(0, 200, 200), # cyan
+    'J': Color8(65, 65, 240), # blue
+    'L': Color8(255, 127, 0), # orange
+    'O': Color8(200, 200, 0), # yellow
+    'S': Color8(0, 200, 0),   # green
+    'T': Color8(128, 0, 128), # purple
+    'Z': Color8(200, 0, 0),   # red
+}
+
 func _ready():
     self.globals = get_node("/root/globals")
     self._init_matrix()
@@ -249,5 +259,5 @@ func _randomize():
 func _new_shape():
     var shape = preload("res://shape.tscn").instantiate()
     var type = self._randomize()
-    shape.init(type, self.shape_map[type])
+    shape.init(type, self.shape_map[type], self.color_map[type])
     return shape
