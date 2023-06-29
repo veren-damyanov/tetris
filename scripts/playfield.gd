@@ -41,6 +41,9 @@ func _process(delta):
     var right = Input.is_action_pressed("right")
     var down = Input.is_action_pressed("down")
     var space = Input.is_action_pressed("space")
+    var escape = Input.is_action_pressed("escape")
+    if escape:
+        return
     # process input and move
     self.das_elapsed += 1
     if not down:
@@ -111,17 +114,72 @@ func _deactivate_current_shape():
     self._clear_lines()
 
 func _clear_lines():
-    for i in range(self.globals.FIELD_Y, 3, -1):
+    var cleared_lines = []
+    for i in range(self.globals.FIELD_Y, 0, -1):
         var line_full = true
         for j in range(1, self.globals.FIELD_X+1):
             if self.matrix[j][i][0] == 0:
                 line_full = false
+                break
         if line_full == true:
-            # print('line %d is full!' % i)
+            print('line %d is full! clearing!' % i)
             for j in range(1, self.globals.FIELD_X+1):
                 self.matrix[j][i][0] = 0
                 self.remove_child(self.matrix[j][i][1])
                 self.matrix[j][i][1] = null
+            cleared_lines.append(i)
+    if cleared_lines:
+        self._settle_board(cleared_lines)
+#            for k in range(i, 0, -1):
+#                for l in range(1, self.globals.FIELD_X+1):
+#                    if self.matrix[l][k][1] == null:
+#                        continue
+#                    self._move_block(self.matrix[l][k][1], 0, 1)
+
+func _settle_board(cleared_lines):
+    cleared_lines.sort()
+    cleared_lines.reverse()
+    print(cleared_lines)
+    for i in range(self.globals.FIELD_Y, 0, -1):
+        if i > cleared_lines[0] or i in cleared_lines:
+            continue
+        var q = 0
+        for n in cleared_lines:
+            if i > n:
+                break
+            q += 1
+        for j in range(1, self.globals.FIELD_X+1):
+            if self.matrix[j][i][1] != null:
+                self._move_block(self.matrix[j][i][1], 0, q)
+                await get_tree().create_timer(0.01).timeout
+
+func _move_block(block, dx, dy):
+    var v = self._coords_from_position(block.get_position())
+    self.matrix[v.x][v.y][0] = 0
+    self.matrix[v.x][v.y][1] = null
+    v.y += dy
+    block.set_position(self._position_from_coords(v))
+    self.matrix[v.x][v.y][0] = 1
+    self.matrix[v.x][v.y][1] = block
+    
+
+#func _settle_board():
+#    for i in range(self.globals.FIELD_Y, 0, -1):
+#        for j in range(1, self.globals.FIELD_X+1):
+#            if self.matrix[j][i][1] != null:
+#                self._drop_block(self.matrix[j][i][1])
+#
+#func _drop_block(block):
+#    var v = self._coords_from_position(block.get_position())
+#    var lowest = v.y
+#    while lowest < 25:
+#        if self.matrix[v.x][lowest+1][0] == 1:
+#            break
+#        lowest += 1
+#    block.set_position(self._position_from_coords(Vector2(v.x, lowest)))
+#    self.matrix[v.x][v.y][0] = 0
+#    self.matrix[v.x][lowest][0] = 1
+    
 
 func _coords_from_position(vector):
     var x = (vector.x - globals.TILE_SIZE / 2) / self.globals.TILE_SIZE
@@ -134,20 +192,12 @@ func _position_from_coords(vector):
     return Vector2(x, y)
 
 func _is_active_shape_movable(dx, dy):
-    print(self.matrix)
     # var tpos = self.active_shape.get_tpos()
     var matrix_pos = self._coords_from_position(self.active_shape.get_position())
     var coords = self.active_shape.get_coords()
     for v in coords:
-#        print('==========')
-#        print(matrix_pos.y)
-#        print(v.y)
-#        print(dy)
         var x = matrix_pos.x + v.x + dx
         var y = matrix_pos.y + v.y + dy
-#        print(x)
-#        print(y)
-#        print(self.matrix[x][y][0])
         if self.matrix[x][y][0] == 1:
             return false
     return true
@@ -172,7 +222,7 @@ func _init_matrix():
             else:
                 self.matrix[i].append([0, null])
         self.matrix[i].append([1, null])
-    print(matrix)
+    # print(matrix)
 
 func _randomize():
     var options = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
