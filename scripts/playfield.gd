@@ -10,6 +10,8 @@ var gravity = 0.04     # gravity measured in tiles per frame # 0.0156G
 var gravity_fast = 0.4 # gravity increase when down button is held
 var gravity_sum = 0    # helper to keep track of gravity
 var fast_mode = false  # regulates when we use fast gravity
+var game_over = false  # game over flag
+var starting_position = Vector2(5, 0)
 # var graveyard = []   # storage for inactive shapes
 
 var shape_map = {
@@ -33,9 +35,10 @@ func _process(delta):
     # self.get_node('Label').set_text("FPS %d" % Engine.get_frames_per_second())
     # var v = self.active_shape.get_position()
     # self.get_node('Label').set_text("x: %d, y: %d" % [v.x, v.y])
-    var v = self._coords_from_position(self.active_shape.get_position())
-    self.get_node('Label').set_text("x: %d, y: %d" % [v.x, v.y])
-
+    # var v = self._coords_from_position(self.active_shape.get_position())
+    # self.get_node('Label').set_text("x: %d, y: %d" % [v.x, v.y])
+    if self.game_over:
+        return
     # collect input
     var left = Input.is_action_pressed("left")
     var right = Input.is_action_pressed("right")
@@ -73,6 +76,10 @@ func _process(delta):
         if self._is_active_shape_movable(0, 1):
             self._move_active_shape(0, 1)
         else:
+            if self._coords_from_position(self.active_shape.get_position()) == self.starting_position:
+                self.game_over = true
+                self.get_node('Label').set_text("GAME OVER")
+                return
             self._deactivate_current_shape()
             self.active_shape = self._new_active_shape()
             self.add_child(self.active_shape)
@@ -92,7 +99,7 @@ func _rotate_active_if_possible():
 
 func _new_active_shape():
     var shape = self._new_shape()
-    shape.set_position(self._position_from_coords(Vector2(5, 0)))
+    shape.set_position(self._position_from_coords(self.starting_position))
     # shape.set_tpos(Vector2(5, 0))
     return shape
 

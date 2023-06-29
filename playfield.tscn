@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://scripts/playfield.gd" id="1_tfsfn"]
 
 [sub_resource type="Theme" id="Theme_25mf6"]
-default_font_size = 10
+default_font_size = 18
 
 [node name="Playfield" type="Node2D"]
 script = ExtResource("1_tfsfn")
@@ -15,10 +15,10 @@ texture = ExtResource("1_bkmto")
 offset = Vector2(72, 104)
 
 [node name="Label" type="Label" parent="."]
-offset_left = 8.0
-offset_top = 69.0
-offset_right = 88.0
-offset_bottom = 111.0
+z_index = 2
+offset_top = 66.0
+offset_right = 144.0
+offset_bottom = 119.0
 theme = SubResource("Theme_25mf6")
 horizontal_alignment = 1
 vertical_alignment = 1
