@@ -17,7 +17,7 @@ var shape_map = {
     'J': [Vector2(-1, -1), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0)],
     'L': [Vector2(1, -1), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0)],
     'O': [Vector2(0, 0), Vector2(1, 0), Vector2(0, 1), Vector2(1, 1)],
-    'S': [Vector2(0, -1), Vector2(1, -1), Vector2(1, 0), Vector2(0, 0)],
+    'S': [Vector2(0, -1), Vector2(1, -1), Vector2(-1, 0), Vector2(0, 0)],
     'T': [Vector2(0, -1), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0)],
     'Z': [Vector2(-1, -1), Vector2(0, -1), Vector2(0, 0), Vector2(1, 0)],
 }
@@ -231,5 +231,5 @@ func _randomize():
 func _new_shape():
     var shape = preload("res://shape.tscn").instantiate()
     var type = self._randomize()
-    shape.init(type, shape_map[type])
+    shape.init(type, self.shape_map[type])
     return shape
