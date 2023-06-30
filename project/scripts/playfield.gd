@@ -56,7 +56,7 @@ func _process(delta):
     var left = Input.is_action_pressed("left")
     var right = Input.is_action_pressed("right")
     var down = Input.is_action_pressed("down")
-    var space = Input.is_action_pressed("space")
+    var up = Input.is_action_pressed("up")
     var escape = Input.is_action_pressed("escape")
     if escape:
         return
@@ -65,18 +65,18 @@ func _process(delta):
     if not down:
         self.fast_mode = false
     if self.das_elapsed >= self.DAS:
-        if left and not (right or down or space):
+        if left:
             self.das_elapsed = 0
             if self._is_active_shape_movable(-1, 0):
                 self._move_active_shape(-1, 0)
-        elif right and not (left or down or space):
+        if right:
             self.das_elapsed = 0
             if self._is_active_shape_movable(1, 0):
                 self._move_active_shape(1, 0)
-        elif space and not (left or right or down):
+        elif up:
             self.das_elapsed = 0
             self._rotate_active_if_possible()
-        elif down and not (left or right or space):
+        elif down:
             self.das_elapsed = 0
             self.fast_mode = true
     # process gravity
