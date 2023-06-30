@@ -47,9 +47,9 @@ jobs:
         unzip templates.tpz
         # Create needed dirs
         # Templates with godot 4 must be in ~/.local/share/godot/export_templates/${MAJOR.MINOR.PATCH}
-        mkdir -v -p ~/.local/share/godot/export_templates/${GODOT_VERSION}
+        mkdir -v -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
         
-        mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}
+        mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
         mv godot/Godot* ${GITHUB_WORKSPACE}/godot.x86_64
         # Just cleaning
         rm -R templates/
