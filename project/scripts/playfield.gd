@@ -1,23 +1,24 @@
 extends Node2D
 
-const DAS = 8          # input delay in frames
+const DAS = 2          # Delayed Auto Shift in frames
+const DAS_DELAY = 10   # DAS delay in frames
 const START_POSITION = Vector2(5, 0)
 
 var globals            # for importing globals
 var matrix             # the board
 var active_shape       # the currently active (falling) shape
-var das_elapsed = 0    # time elapsed since last input
+var das_flag = false   # determines if DAS is active
+var current_delay = 0  # frames until next input is legal
 var gravity = [
     0.01667, 0.021017, 0.026977, 0.035256, 0.04693,
     0.06361, 0.0879,0.1236, 0.1775, 0.2598, 0.388,
-    0.59, 0.92, 1.46, 2.36, 3.91, 6.61, 11.43, 20
-]
+    0.59, 0.92, 1.46, 2.36, 3.91, 6.61, 11.43, 20]
 var gravity_sum = 0    # helper to keep track of gravity
-var fast_mode = false  # regulates when we use fast gravity
 var game_over = false  # game over flag
 var score = 0          # tracks the score
 var lines = 0          # tracks number of lines completed
 var level = 1          # tracks the level
+var move = 'N/A'       # tracks direction of movement
 
 var shape_map = {
     'I': [Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0), Vector2(2, 0)],
@@ -40,48 +41,69 @@ var color_map = {
 }
 
 func _ready():
+    # initialize some things
     self.globals = get_node("/root/globals")
     self._init_matrix()
+    # create new active shape
     self.active_shape = self._new_active_shape()
     self.add_child(self.active_shape)
 
 func _process(delta):
+    if self.game_over:
+        return
     # update labels
     self.get_node('Score').set_text("%d" % self.score)
     self.get_node('Level').set_text("%d" % self.level)
     self.get_node('Lines').set_text("%d" % self.lines)
-    if self.game_over:
-        return
     # collect input
     var left = Input.is_action_pressed("left")
+    var left_press = Input.is_action_just_pressed("left")
+    var left_release = Input.is_action_just_released("left")
     var right = Input.is_action_pressed("right")
+    var right_press = Input.is_action_just_pressed("right")
+    var right_release = Input.is_action_just_released("right")
+    var up_press = Input.is_action_just_pressed("up")
     var down = Input.is_action_pressed("down")
-    var up = Input.is_action_pressed("up")
     var escape = Input.is_action_pressed("escape")
+    # pause (this is probably not a permanent feature)
     if escape:
         return
-    # process input and move
-    self.das_elapsed += 1
-    if not down:
-        self.fast_mode = false
-    if self.das_elapsed >= self.DAS:
+    # work out logic of left/right movement
+    if left_press and not right_press:
+        self.move = 'left'
+    elif right_press and not left_press:
+        self.move = 'right'
+    if left_release:
+        self.das_flag = false
+        self.move = 'N/A'
+        if right:
+            self.move = 'right'
+    if right_release:
+        self.das_flag = false
+        self.move = 'N/A'
         if left:
-            self.das_elapsed = 0
+            self.move = 'left'
+    # process input and move
+    if up_press:
+        self._rotate_active_if_possible()
+    self.current_delay -= 1
+    if self.current_delay <= 0:
+        var new_delay = self.DAS_DELAY
+        if self.das_flag == true:
+            new_delay = self.DAS
+        if self.move == 'left':
+            self.das_flag = true
+            self.current_delay = new_delay
             if self._is_active_shape_movable(-1, 0):
                 self._move_active_shape(-1, 0)
-        if right:
-            self.das_elapsed = 0
+        elif self.move == 'right':
+            self.das_flag = true
+            self.current_delay = new_delay
             if self._is_active_shape_movable(1, 0):
                 self._move_active_shape(1, 0)
-        elif up:
-            self.das_elapsed = 0
-            self._rotate_active_if_possible()
-        elif down:
-            self.das_elapsed = 0
-            self.fast_mode = true
     # process gravity
-    if fast_mode:
-        self.gravity_sum += max(0.4, self.gravity[self.level-1] * 2)
+    if down:
+        self.gravity_sum += max(0.4, self.gravity[self.level-1] * 1.5)
     else:
         self.gravity_sum += self.gravity[self.level-1]
     if self.gravity_sum >= 1:
@@ -217,7 +239,7 @@ func _settle_board(cleared_lines):
         for j in range(1, self.globals.FIELD_X+1):
             if self.matrix[j][i][1] != null:
                 self._move_block(self.matrix[j][i][1], 0, q)
-                await get_tree().create_timer(0.008).timeout
+        await get_tree().create_timer(0.02).timeout
 
 func _update_stats(lines):
     var bases_map = { 1: 40, 2: 100, 3: 300, 4: 1200 }
