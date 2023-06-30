@@ -30,6 +30,9 @@ func get_size():
 func get_coords():
     return self.coords
 
+func get_type():
+    return self.type
+
 func set_coords(new_coords):
     self.coords = new_coords
     self._adjust_positions()

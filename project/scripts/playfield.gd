@@ -7,6 +7,7 @@ const START_POSITION = Vector2(5, 0)
 var globals            # for importing globals
 var matrix             # the board
 var active_shape       # the currently active (falling) shape
+var ghost_shape        # the ghost of the current active shape
 var das_flag = false   # determines if DAS is active
 var current_delay = 0  # frames until next input is legal
 var gravity = [
@@ -45,8 +46,7 @@ func _ready():
     self.globals = get_node("/root/globals")
     self._init_matrix()
     # create new active shape
-    self.active_shape = self._new_active_shape()
-    self.add_child(self.active_shape)
+    self._setup_active_shape()
 
 func _process(delta):
     if self.game_over:
@@ -94,13 +94,15 @@ func _process(delta):
         if self.move == 'left':
             self.das_flag = true
             self.current_delay = new_delay
-            if self._is_active_shape_movable(-1, 0):
-                self._move_active_shape(-1, 0)
+            if self._is_shape_movable(self.active_shape, -1, 0):
+                # self._move_shape(self.active_shape, -1, 0)
+                self._move_active_shape(-1)
         elif self.move == 'right':
             self.das_flag = true
             self.current_delay = new_delay
-            if self._is_active_shape_movable(1, 0):
-                self._move_active_shape(1, 0)
+            if self._is_shape_movable(self.active_shape, 1, 0):
+                # self._move_shape(self.active_shape, 1, 0)
+                self._move_active_shape(1)
     # process gravity
     if down:
         self.gravity_sum += max(0.4, self.gravity[self.level-1] * 1.5)
@@ -108,16 +110,15 @@ func _process(delta):
         self.gravity_sum += self.gravity[self.level-1]
     if self.gravity_sum >= 1:
         self.gravity_sum = 0
-        if self._is_active_shape_movable(0, 1):
-            self._move_active_shape(0, 1)
+        if self._is_shape_movable(self.active_shape, 0, 1):
+            self._move_shape(self.active_shape, 0, 1)
         else:
             if self._coords_from_position(self.active_shape.get_position()) == self.START_POSITION:
                 self.game_over = true
                 self.get_node('GameOver').set_text("GAME OVER")
                 return
             self._deactivate_current_shape()
-            self.active_shape = self._new_active_shape()
-            self.add_child(self.active_shape)
+            self._setup_active_shape()
 
 func _init_matrix():
     self.matrix = []
@@ -150,14 +151,29 @@ func _new_shape():
     shape.init(type, self.shape_map[type], self.color_map[type])
     return shape
 
-func _new_active_shape():
-    var shape = self._new_shape()
-    shape.set_position(self._position_from_coords(self.START_POSITION))
+func _new_ghost():
+    var shape = preload("res://shape.tscn").instantiate()
+    var type = self.active_shape.get_type()
+    shape.init(type, self.shape_map[type], Color(1, 1, 1, 0.2))
     return shape
 
-func _is_active_shape_movable(dx, dy):
-    var matrix_pos = self._coords_from_position(self.active_shape.get_position())
-    var coords = self.active_shape.get_coords()
+func _setup_active_shape():
+    # create and setup active shape
+    var shape = self._new_shape()
+    shape.set_position(self._position_from_coords(self.START_POSITION))
+    self.add_child(shape)
+    self.active_shape = shape
+    # create and setup its ghost
+    var ghost = self._new_ghost()
+    ghost.set_position(self._position_from_coords(self.START_POSITION))
+    while(self._is_shape_movable(ghost, 0, 1)):
+        self._move_shape(ghost, 0, 1)
+    self.add_child(ghost)
+    self.ghost_shape = ghost
+
+func _is_shape_movable(shape, dx, dy):
+    var matrix_pos = self._coords_from_position(shape.get_position())
+    var coords = shape.get_coords()
     for v in coords:
         var x = matrix_pos.x + v.x + dx
         var y = matrix_pos.y + v.y + dy
@@ -165,23 +181,36 @@ func _is_active_shape_movable(dx, dy):
             return false
     return true
 
-func _move_active_shape(dx, dy):
-    var matrix_pos = self._coords_from_position(self.active_shape.get_position())
+func _move_shape(shape, dx, dy):
+    var matrix_pos = self._coords_from_position(shape.get_position())
     matrix_pos.x += dx
     matrix_pos.y += dy
-    self.active_shape.set_position(self._position_from_coords(matrix_pos))
+    shape.set_position(self._position_from_coords(matrix_pos))
 
-func _rotate_active_if_possible():
+func _move_active_shape(dx):
+    self._move_shape(self.active_shape, dx, 0)
+    self.ghost_shape.set_position(self.active_shape.get_position())
+    while(self._is_shape_movable(self.ghost_shape, 0, 1)):
+        self._move_shape(self.ghost_shape, 0, 1)
+
+func _rotate_shape_if_possible(shape):
     var new_coords = []
-    var size = self.active_shape.get_size()
-    var matrix_pos = self._coords_from_position(self.active_shape.get_position())
-    for v in self.active_shape.get_coords():
+    var size = shape.get_size()
+    var matrix_pos = self._coords_from_position(shape.get_position())
+    for v in shape.get_coords():
         var x = size - v.y
         var y = v.x
         if self.matrix[matrix_pos.x+x][matrix_pos.y+y][0] == 1:
             return
         new_coords.append(Vector2(x, y))
-    self.active_shape.set_coords(new_coords)
+    shape.set_coords(new_coords)
+
+func _rotate_active_if_possible():
+    self._rotate_shape_if_possible(self.active_shape)
+    self.ghost_shape.set_position(self.active_shape.get_position())
+    self._rotate_shape_if_possible(self.ghost_shape)
+    while(self._is_shape_movable(self.ghost_shape, 0, 1)):
+        self._move_shape(self.ghost_shape, 0, 1)
 
 func _deactivate_current_shape():
     var matrix_pos = self._coords_from_position(self.active_shape.get_position())
@@ -196,6 +225,7 @@ func _deactivate_current_shape():
         self.add_child(blocks[i])
         blocks[i].set_position(self._position_from_coords(Vector2(x, y)))
     self.active_shape.queue_free()
+    self.ghost_shape.queue_free()
     self._clear_lines()
 
 func _move_block(block, dx, dy):
