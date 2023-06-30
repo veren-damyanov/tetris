@@ -64,10 +64,13 @@ func _process(delta):
     var right_release = Input.is_action_just_released("right")
     var up_press = Input.is_action_just_pressed("up")
     var down = Input.is_action_pressed("down")
+    var space_press = Input.is_action_just_pressed("space")
     var escape = Input.is_action_pressed("escape")
     # pause (this is probably not a permanent feature)
     if escape:
         return
+    if space_press:
+        self._hard_drop()
     # work out logic of left/right movement
     if left_press and not right_press:
         self.move = 'left'
@@ -109,16 +112,7 @@ func _process(delta):
     else:
         self.gravity_sum += self.gravity[self.level-1]
     if self.gravity_sum >= 1:
-        self.gravity_sum = 0
-        if self._is_shape_movable(self.active_shape, 0, 1):
-            self._move_shape(self.active_shape, 0, 1)
-        else:
-            if self._coords_from_position(self.active_shape.get_position()) == self.START_POSITION:
-                self.game_over = true
-                self.get_node('GameOver').set_text("GAME OVER")
-                return
-            self._deactivate_current_shape()
-            self._setup_active_shape()
+        self._gravity()
 
 func _init_matrix():
     self.matrix = []
@@ -176,7 +170,7 @@ func _is_shape_movable(shape, dx, dy):
     var coords = shape.get_coords()
     for v in coords:
         var x = matrix_pos.x + v.x + dx
-        var y = matrix_pos.y + v.y + dy
+        var y = max(0, matrix_pos.y + v.y + dy)
         if self.matrix[x][y][0] == 1:
             return false
     return true
@@ -193,6 +187,18 @@ func _move_active_shape(dx):
     while(self._is_shape_movable(self.ghost_shape, 0, 1)):
         self._move_shape(self.ghost_shape, 0, 1)
 
+func _gravity():
+    self.gravity_sum = 0
+    if self._is_shape_movable(self.active_shape, 0, 1):
+        self._move_shape(self.active_shape, 0, 1)
+    else:
+        if self._coords_from_position(self.active_shape.get_position()) == self.START_POSITION:
+            self.game_over = true
+            self.get_node('GameOver').set_text("GAME OVER")
+            return
+        self._deactivate_current_shape()
+        self._setup_active_shape()
+
 func _rotate_shape_if_possible(shape):
     var new_coords = []
     var size = shape.get_size()
@@ -200,7 +206,7 @@ func _rotate_shape_if_possible(shape):
     for v in shape.get_coords():
         var x = size - v.y
         var y = v.x
-        if self.matrix[matrix_pos.x+x][matrix_pos.y+y][0] == 1:
+        if self.matrix[matrix_pos.x+x][max(0, matrix_pos.y+y)][0] == 1:
             return
         new_coords.append(Vector2(x, y))
     shape.set_coords(new_coords)
@@ -211,6 +217,11 @@ func _rotate_active_if_possible():
     self._rotate_shape_if_possible(self.ghost_shape)
     while(self._is_shape_movable(self.ghost_shape, 0, 1)):
         self._move_shape(self.ghost_shape, 0, 1)
+
+func _hard_drop():
+    while (self._is_shape_movable(self.active_shape, 0, 1)):
+        self._move_shape(self.active_shape, 0, 1)
+    self._gravity()
 
 func _deactivate_current_shape():
     var matrix_pos = self._coords_from_position(self.active_shape.get_position())
