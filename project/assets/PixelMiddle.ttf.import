@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://bilo4o787a3jc"
-path="res://.godot/imported/m3x6.ttf-29e134dd6f879b5b054b7adb3472081a.fontdata"
+uid="uid://c53y8c0ehrf8e"
+path="res://.godot/imported/PixelMiddle.ttf-bad79e1a61d0e731a275d203ad5f6408.fontdata"
 
 [deps]
 
-source_file="res://assets/m3x6.ttf"
-dest_files=["res://.godot/imported/m3x6.ttf-29e134dd6f879b5b054b7adb3472081a.fontdata"]
+source_file="res://assets/PixelMiddle.ttf"
+dest_files=["res://.godot/imported/PixelMiddle.ttf-bad79e1a61d0e731a275d203ad5f6408.fontdata"]
 
 [params]
 

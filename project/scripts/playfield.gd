@@ -47,9 +47,9 @@ func _ready():
 
 func _process(delta):
     # update labels
-    self.get_node('Score').set_text("[center][b]%d[/b][/center]" % self.score)
-    self.get_node('Level').set_text("[center][b]%d[/b][/center]" % self.level)
-    self.get_node('Lines').set_text("[center][b]%d[/b][/center]" % self.lines)
+    self.get_node('Score').set_text("%d" % self.score)
+    self.get_node('Level').set_text("%d" % self.level)
+    self.get_node('Lines').set_text("%d" % self.lines)
     if self.game_over:
         return
     # collect input
@@ -91,7 +91,7 @@ func _process(delta):
         else:
             if self._coords_from_position(self.active_shape.get_position()) == self.START_POSITION:
                 self.game_over = true
-                self.get_node('Label').set_text("GAME OVER")
+                self.get_node('GameOver').set_text("GAME OVER")
                 return
             self._deactivate_current_shape()
             self.active_shape = self._new_active_shape()

@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://thm5hbkgah7b" path="res://assets/playfield.png" id="1_bkmto"]
 [ext_resource type="Script" path="res://scripts/playfield.gd" id="1_tfsfn"]
-[ext_resource type="FontFile" uid="uid://bilo4o787a3jc" path="res://assets/m3x6.ttf" id="3_65ko8"]
+[ext_resource type="FontFile" uid="uid://c53y8c0ehrf8e" path="res://assets/PixelMiddle.ttf" id="4_ef74j"]
 
 [node name="Playfield" type="Node2D"]
 script = ExtResource("1_tfsfn")
@@ -12,44 +12,45 @@ z_index = 1
 texture = ExtResource("1_bkmto")
 offset = Vector2(72, 104)
 
-[node name="Label" type="Label" parent="."]
+[node name="GameOver" type="Label" parent="."]
 z_index = 2
 offset_top = 66.0
 offset_right = 144.0
 offset_bottom = 119.0
-theme_override_font_sizes/font_size = 18
+theme_override_fonts/font = ExtResource("4_ef74j")
+theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Score" type="RichTextLabel" parent="."]
-offset_left = 97.0
-offset_top = 24.0
-offset_right = 135.0
-offset_bottom = 40.0
-theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_fonts/bold_font = ExtResource("3_65ko8")
-theme_override_font_sizes/bold_font_size = 16
-bbcode_enabled = true
-scroll_active = false
+[node name="Score" type="Label" parent="."]
+offset_left = 102.0
+offset_top = 25.0
+offset_right = 131.0
+offset_bottom = 39.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_ef74j")
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="Level" type="RichTextLabel" parent="."]
-offset_left = 97.0
-offset_top = 56.0
-offset_right = 135.0
+[node name="Level" type="Label" parent="."]
+offset_left = 102.0
+offset_top = 57.0
+offset_right = 131.0
 offset_bottom = 71.0
-theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_fonts/bold_font = ExtResource("3_65ko8")
-theme_override_font_sizes/bold_font_size = 16
-bbcode_enabled = true
-scroll_active = false
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_ef74j")
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="Lines" type="RichTextLabel" parent="."]
-offset_left = 97.0
-offset_top = 88.0
-offset_right = 135.0
+[node name="Lines" type="Label" parent="."]
+offset_left = 102.0
+offset_top = 89.0
+offset_right = 131.0
 offset_bottom = 103.0
-theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_fonts/bold_font = ExtResource("3_65ko8")
-theme_override_font_sizes/bold_font_size = 16
-bbcode_enabled = true
-scroll_active = false
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_ef74j")
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+vertical_alignment = 1
