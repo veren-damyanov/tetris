@@ -4,10 +4,14 @@ const DAS = 2          # Delayed Auto Shift in frames
 const DAS_DELAY = 10   # DAS delay in frames
 const START_POSITION = Vector2(5, 0)
 
+const ShapeProvider = preload("res://scripts/ShapeProvider.gd").ShapeProvider
+
 var globals            # for importing globals
 var matrix             # the board
+
 var active_shape       # the currently active (falling) shape
 var ghost_shape        # the ghost of the current active shape
+
 var das_flag = false   # determines if DAS is active
 var current_delay = 0  # frames until next input is legal
 var gravity = [
@@ -21,27 +25,11 @@ var lines = 0          # tracks number of lines completed
 var level = 1          # tracks the level
 var move = 'N/A'       # tracks direction of movement
 
-var shape_map = {
-    'I': [Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0), Vector2(2, 0)],
-    'J': [Vector2(-1, -1), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0)],
-    'L': [Vector2(1, -1), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0)],
-    'O': [Vector2(0, 0), Vector2(1, 0), Vector2(0, 1), Vector2(1, 1)],
-    'S': [Vector2(0, -1), Vector2(1, -1), Vector2(-1, 0), Vector2(0, 0)],
-    'T': [Vector2(0, -1), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0)],
-    'Z': [Vector2(-1, -1), Vector2(0, -1), Vector2(0, 0), Vector2(1, 0)],
-}
-
-var color_map = {
-    'I': Color8(0, 200, 200), # cyan
-    'J': Color8(65, 65, 240), # blue
-    'L': Color8(255, 127, 0), # orange
-    'O': Color8(200, 200, 0), # yellow
-    'S': Color8(0, 200, 0),   # green
-    'T': Color8(128, 0, 128), # purple
-    'Z': Color8(200, 0, 0),   # red
-}
+var _shapeProvider
 
 func _ready():
+    randomize()
+    _shapeProvider = ShapeProvider.new()
     # initialize some things
     self.globals = get_node("/root/globals")
     self._init_matrix()
@@ -135,30 +123,15 @@ func _position_from_coords(vector):
     var y = globals.TILE_SIZE / 2 + globals.TILE_SIZE * vector.y
     return Vector2(x, y)
 
-func _randomize():
-    var options = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
-    return options[randi() % options.size()]
-
-func _new_shape():
-    var shape = preload("res://shape.tscn").instantiate()
-    var type = self._randomize()
-    shape.init(type, self.shape_map[type], self.color_map[type])
-    return shape
-
-func _new_ghost():
-    var shape = preload("res://shape.tscn").instantiate()
-    var type = self.active_shape.get_type()
-    shape.init(type, self.shape_map[type], Color(1, 1, 1, 0.2))
-    return shape
-
 func _setup_active_shape():
     # create and setup active shape
-    var shape = self._new_shape()
+    print(_shapeProvider) # Add this line to check the type of _shapeProvider
+    var shape = self._shapeProvider.getShape()
     shape.set_position(self._position_from_coords(self.START_POSITION))
     self.add_child(shape)
     self.active_shape = shape
     # create and setup its ghost
-    var ghost = self._new_ghost()
+    var ghost = self._shapeProvider.getGhost()
     ghost.set_position(self._position_from_coords(self.START_POSITION))
     while(self._is_shape_movable(ghost, 0, 1)):
         self._move_shape(ghost, 0, 1)
