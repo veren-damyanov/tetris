@@ -194,7 +194,7 @@ func _gravity():
     else:
         if self._coords_from_position(self.active_shape.get_position()) == self.START_POSITION:
             self.game_over = true
-            self.get_node('GameOver').set_text("GAME OVER")
+            self.get_node('GameOverLabel').set_text("GAME OVER")
             return
         self._deactivate_current_shape()
         self._setup_active_shape()
