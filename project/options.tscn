@@ -1,0 +1,65 @@
+[gd_scene load_steps=3 format=3 uid="uid://bmvwqcklkpm8q"]
+
+[ext_resource type="Theme" uid="uid://e5uhj4dxwoy1" path="res://assets/menu_theme.tres" id="1_jumww"]
+[ext_resource type="Script" path="res://scripts/options.gd" id="1_ml1d5"]
+
+[node name="Options" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_jumww")
+script = ExtResource("1_ml1d5")
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.5
+offset_top = -24.0
+offset_right = 48.5
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+columns = 2
+
+[node name="LayoutLabel" type="Button" parent="MainContainer/GridContainer"]
+layout_mode = 2
+focus_mode = 0
+disabled = true
+text = "layout:"
+flat = true
+
+[node name="LayoutButton" type="Button" parent="MainContainer/GridContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_neighbor_top = NodePath("../../BackButton")
+focus_neighbor_bottom = NodePath("../../BackButton")
+text = "mobile"
+flat = true
+alignment = 2
+
+[node name="BackButton" type="Button" parent="MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_neighbor_top = NodePath("../GridContainer/LayoutButton")
+focus_neighbor_bottom = NodePath("../GridContainer/LayoutButton")
+text = "back"
+flat = true
+
+[connection signal="pressed" from="MainContainer/GridContainer/LayoutLabel" to="." method="_on_layout_button_pressed"]
+[connection signal="pressed" from="MainContainer/GridContainer/LayoutButton" to="." method="_on_layout_button_pressed"]
+[connection signal="pressed" from="MainContainer/BackButton" to="." method="_on_back_button_pressed"]
