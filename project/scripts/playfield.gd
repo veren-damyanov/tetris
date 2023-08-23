@@ -25,12 +25,12 @@ var lines = 0          # tracks number of lines completed
 var level = 1          # tracks the level
 var move = 'N/A'       # tracks direction of movement
 
-var _shapeProvider
+var shape_provider
 
 func _ready():
     randomize()
-    _shapeProvider = ShapeProvider.new()
     # initialize some things
+    self.shape_provider = ShapeProvider.new()
     self.globals = get_node("/root/globals")
     self._init_matrix()
     # create new active shape
@@ -125,13 +125,13 @@ func _position_from_coords(vector):
 
 func _setup_active_shape():
     # create and setup active shape
-    print(_shapeProvider) # Add this line to check the type of _shapeProvider
-    var shape = self._shapeProvider.getShape()
+    # print(self.shape_provider) # Add this line to check the type of shape_provider
+    var shape = self.shape_provider.get_shape()
     shape.set_position(self._position_from_coords(self.START_POSITION))
     self.add_child(shape)
     self.active_shape = shape
     # create and setup its ghost
-    var ghost = self._shapeProvider.getGhost()
+    var ghost = self.shape_provider.get_ghost()
     ghost.set_position(self._position_from_coords(self.START_POSITION))
     while(self._is_shape_movable(ghost, 0, 1)):
         self._move_shape(ghost, 0, 1)

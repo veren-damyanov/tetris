@@ -24,12 +24,12 @@ class ShapeProvider:
     }
 
     var _queue
-    var _activeShapeType
+    var _active_shape_type
 
     func _init():
         self._queue = []
 
-    func getShape():
+    func get_shape():
         if self._queue.size() == 0:
             self._queue = _shapes.duplicate()
             self._queue.shuffle()
@@ -37,11 +37,11 @@ class ShapeProvider:
         var shape = preload("res://shape.tscn").instantiate()
         var type = self._queue.pop_front() # this is just the letter
         shape.init(type, self._shape_map[type], self._color_map[type])
-        _activeShapeType = shape.get_type()
+        _active_shape_type = shape.get_type()
         return shape
     
-    func getGhost():
+    func get_ghost():
         var shape = preload("res://shape.tscn").instantiate()
-        shape.init(_activeShapeType, self._shape_map[_activeShapeType], Color(1, 1, 1, 0.2))
+        shape.init(_active_shape_type, self._shape_map[_active_shape_type], Color(1, 1, 1, 0.2))
         return shape
             
