@@ -60,10 +60,14 @@ jobs:
         # Exporting the game
         ${GITHUB_WORKSPACE}/godot.x86_64 --headless --path . --export-${EXPORT_TEMPLATE} ${EXPORT_PRESET_NAME} ${GITHUB_WORKSPACE}/${EXPORT_FOLDER}/${EXPORT_FILENAME}
     
-    - name: Add coi-service-worker
+#    - name: Add coi-service-worker
+#      run: |
+#        git clone https://github.com/gzuidhof/coi-serviceworker.git
+#        mv coi-serviceworker/coi-serviceworker.js ${EXPORT_FOLDER}/coi-serviceworker.js
+
+    - name: Add coi-script
       run: |
-        git clone https://github.com/gzuidhof/coi-serviceworker.git
-        mv coi-serviceworker/coi-serviceworker.js ${EXPORT_FOLDER}/coi-serviceworker.js
+        mv artifacts/coi-script.js ${EXPORT_FOLDER}/coi-script.js
     
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
