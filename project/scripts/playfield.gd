@@ -3,6 +3,7 @@ extends Node2D
 const DAS = 2          # Delayed Auto Shift in frames
 const DAS_DELAY = 10   # DAS delay in frames
 const START_POSITION = Vector2(5, 0)
+const NEXT_POSITION = Vector2(14, 5)
 
 const ShapeProvider = preload("res://scripts/ShapeProvider.gd").ShapeProvider
 
@@ -10,6 +11,7 @@ var globals            # for importing globals
 var matrix             # the board
 
 var active_shape       # the currently active (falling) shape
+var next_shape         # the currently scheduled "next" shape
 var ghost_shape        # the ghost of the current active shape
 
 var das_flag = false   # determines if DAS is active
@@ -123,15 +125,23 @@ func _position_from_coords(vector):
     var y = globals.TILE_SIZE / 2 + globals.TILE_SIZE * vector.y
     return Vector2(x, y)
 
+func _setup_next_shape():
+    var next = self.shape_provider.get_shape()
+    next.set_position(self._position_from_coords(self.NEXT_POSITION))
+    self.add_child(next)
+    self.next_shape = next
+
 func _setup_active_shape():
-    # create and setup active shape
-    # print(self.shape_provider) # Add this line to check the type of shape_provider
-    var shape = self.shape_provider.get_shape()
-    shape.set_position(self._position_from_coords(self.START_POSITION))
-    self.add_child(shape)
-    self.active_shape = shape
-    # create and setup its ghost
-    var ghost = self.shape_provider.get_ghost()
+    # jumpstart the system when no next shape (start of game)
+    if self.next_shape == null:
+        self._setup_next_shape()
+    # move the "next" shape and make it active
+    self.next_shape.set_position(self._position_from_coords(self.START_POSITION))
+    self.active_shape = self.next_shape
+    # create new "next" shape
+    self._setup_next_shape()
+    # create and setup ghost of active_shape
+    var ghost = self.shape_provider.get_ghost(self.active_shape.get_type())
     ghost.set_position(self._position_from_coords(self.START_POSITION))
     while(self._is_shape_movable(ghost, 0, 1)):
         self._move_shape(ghost, 0, 1)

@@ -7,7 +7,7 @@ class ShapeProvider:
         'I': [Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0), Vector2(2, 0)],
         'J': [Vector2(-1, -1), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0)],
         'L': [Vector2(1, -1), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0)],
-        'O': [Vector2(0, 0), Vector2(1, 0), Vector2(0, 1), Vector2(1, 1)],
+        'O': [Vector2(0, -1), Vector2(1, -1), Vector2(0, 0), Vector2(1, 0)],
         'S': [Vector2(0, -1), Vector2(1, -1), Vector2(-1, 0), Vector2(0, 0)],
         'T': [Vector2(0, -1), Vector2(-1, 0), Vector2(0, 0), Vector2(1, 0)],
         'Z': [Vector2(-1, -1), Vector2(0, -1), Vector2(0, 0), Vector2(1, 0)],
@@ -24,7 +24,7 @@ class ShapeProvider:
     }
 
     var _queue
-    var _active_shape_type
+    # var _active_shape_type
 
     func _init():
         self._queue = []
@@ -37,11 +37,11 @@ class ShapeProvider:
         var shape = preload("res://shape.tscn").instantiate()
         var type = self._queue.pop_front() # this is just the letter
         shape.init(type, self._shape_map[type], self._color_map[type])
-        _active_shape_type = shape.get_type()
+        # self._active_shape_type = shape.get_type()
         return shape
     
-    func get_ghost():
+    func get_ghost(active_shape_type):
         var shape = preload("res://shape.tscn").instantiate()
-        shape.init(_active_shape_type, self._shape_map[_active_shape_type], Color(1, 1, 1, 0.2))
+        # var active_shape_type = self.get_parent()
+        shape.init(active_shape_type, self._shape_map[active_shape_type], Color(1, 1, 1, 0.2))
         return shape
-            
