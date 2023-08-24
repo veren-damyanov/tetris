@@ -28,6 +28,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="GridContainer" type="GridContainer" parent="MainContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -35,21 +36,21 @@ columns = 2
 
 [node name="LayoutLabel" type="Button" parent="MainContainer/GridContainer"]
 layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
 focus_mode = 0
 disabled = true
 text = "layout:"
 flat = true
 
 [node name="LayoutButton" type="Button" parent="MainContainer/GridContainer"]
-custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_horizontal = 8
 size_flags_vertical = 4
 focus_neighbor_top = NodePath("../../BackButton")
 focus_neighbor_bottom = NodePath("../../BackButton")
-text = "mobile"
+text = "desktop"
 flat = true
-alignment = 2
 
 [node name="BackButton" type="Button" parent="MainContainer"]
 layout_mode = 2
@@ -61,5 +62,9 @@ text = "back"
 flat = true
 
 [connection signal="pressed" from="MainContainer/GridContainer/LayoutLabel" to="." method="_on_layout_button_pressed"]
+[connection signal="focus_entered" from="MainContainer/GridContainer/LayoutButton" to="." method="_on_layout_button_focus_entered"]
+[connection signal="focus_exited" from="MainContainer/GridContainer/LayoutButton" to="." method="_on_layout_button_focus_exited"]
 [connection signal="pressed" from="MainContainer/GridContainer/LayoutButton" to="." method="_on_layout_button_pressed"]
+[connection signal="focus_entered" from="MainContainer/BackButton" to="." method="_on_back_button_focus_entered"]
+[connection signal="focus_exited" from="MainContainer/BackButton" to="." method="_on_back_button_focus_exited"]
 [connection signal="pressed" from="MainContainer/BackButton" to="." method="_on_back_button_pressed"]
