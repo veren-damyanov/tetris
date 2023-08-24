@@ -3,7 +3,7 @@ extends Node2D
 const DAS = 2          # Delayed Auto Shift in frames
 const DAS_DELAY = 10   # DAS delay in frames
 const START_POSITION = Vector2(5, 0)
-const NEXT_POSITION = Vector2(14, 5)
+const NEXT_POSITION = Vector2(15, 4)
 
 const ShapeProvider = preload("res://scripts/ShapeProvider.gd").ShapeProvider
 
@@ -37,12 +37,11 @@ func _ready():
     self.globals = get_node("/root/globals")
     self._init_matrix()
     # set up viewport according to the layout
-    print(globals.LAYOUT)
     match globals.current_layout:
         globals.LAYOUT.DESKTOP:
-            $'/root'.set_content_scale_size(Vector2i(192, 176))
+            $'/root'.set_content_scale_size(Vector2i(152, 215))
         globals.LAYOUT.MOBILE:
-            $'/root'.set_content_scale_size(Vector2i(192, 264))
+            $'/root'.set_content_scale_size(Vector2i(152, 286))
     # create new active shape
     self._setup_active_shape()
 

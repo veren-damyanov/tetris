@@ -5,7 +5,13 @@ var globals
 
 func _ready():
     self.globals = get_node("/root/globals")
-    $MainContainer/GridContainer/LayoutButton.grab_focus()
+    var layout_button = $MainContainer/GridContainer/LayoutButton
+    layout_button.grab_focus()
+    match globals.current_layout:
+        globals.LAYOUT.DESKTOP:
+            layout_button.set_text('desktop')
+        globals.LAYOUT.MOBILE:
+            layout_button.set_text('mobile')
 
 func _on_layout_button_pressed():
     var layout_button = $MainContainer/GridContainer/LayoutButton

@@ -36,7 +36,8 @@ class ShapeProvider:
         
         var shape = preload("res://shape.tscn").instantiate()
         var type = self._queue.pop_front() # this is just the letter
-        shape.init(type, self._shape_map[type], self._color_map[type])
+        # shape.init(type, self._shape_map[type], self._color_map[type])
+        shape.init(type, self._shape_map[type], Color8(65, 255, 0, 200))
         # self._active_shape_type = shape.get_type()
         return shape
     
