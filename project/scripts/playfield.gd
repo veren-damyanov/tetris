@@ -28,6 +28,7 @@ var level = 1          # tracks the level
 var move = 'N/A'       # tracks direction of movement
 
 var shape_provider
+@onready var mb = $Buttons
 
 func _ready():
     randomize()
@@ -35,6 +36,13 @@ func _ready():
     self.shape_provider = ShapeProvider.new()
     self.globals = get_node("/root/globals")
     self._init_matrix()
+    # set up viewport according to the layout
+    print(globals.LAYOUT)
+    match globals.current_layout:
+        globals.LAYOUT.DESKTOP:
+            $'/root'.set_content_scale_size(Vector2i(192, 176))
+        globals.LAYOUT.MOBILE:
+            $'/root'.set_content_scale_size(Vector2i(192, 264))
     # create new active shape
     self._setup_active_shape()
 
@@ -46,6 +54,52 @@ func _process(delta):
     self.get_node('Level').set_text("%d" % self.level)
     self.get_node('Lines').set_text("%d" % self.lines)
     # collect input
+    var input = self._process_input()
+    var up_press = input[0]
+    var down = input[1]
+    var space_press = input[2]
+    var escape = input[3]
+    # pause (this is probably not a permanent feature)
+    if escape:
+        return
+    # hard drop
+    if space_press:
+        self._hard_drop()
+    # rotate
+    if up_press:
+        self._rotate_active_if_possible()
+    # left-right movement
+    self.current_delay -= 1
+    if self.current_delay <= 0:
+        var new_delay = self.DAS_DELAY
+        if self.das_flag == true:
+            new_delay = self.DAS
+        if self.move == 'left':
+            self.das_flag = true
+            self.current_delay = new_delay
+            if self._is_shape_movable(self.active_shape, -1, 0):
+                self._move_active_shape(-1)
+        elif self.move == 'right':
+            self.das_flag = true
+            self.current_delay = new_delay
+            if self._is_shape_movable(self.active_shape, 1, 0):
+                self._move_active_shape(1)
+    # gravity and downwards acceleration
+    if down:
+        self.gravity_sum += max(0.4, self.gravity[self.level-1] * 1.5)
+    else:
+        self.gravity_sum += self.gravity[self.level-1]
+    if self.gravity_sum >= 1:
+        self._gravity()
+
+func _process_input():
+    match globals.current_layout:
+        globals.LAYOUT.DESKTOP:
+            return self._process_input_desktop()
+        globals.LAYOUT.MOBILE:
+            return self._process_input_mobile()
+
+func _process_input_desktop():
     var left = Input.is_action_pressed("left")
     var left_press = Input.is_action_just_pressed("left")
     var left_release = Input.is_action_just_released("left")
@@ -56,11 +110,6 @@ func _process(delta):
     var down = Input.is_action_pressed("down")
     var space_press = Input.is_action_just_pressed("space")
     var escape = Input.is_action_pressed("escape")
-    # pause (this is probably not a permanent feature)
-    if escape:
-        return
-    if space_press:
-        self._hard_drop()
     # work out logic of left/right movement
     if left_press and not right_press:
         self.move = 'left'
@@ -76,33 +125,36 @@ func _process(delta):
         self.move = 'N/A'
         if left:
             self.move = 'left'
-    # process input and move
-    if up_press:
-        self._rotate_active_if_possible()
-    self.current_delay -= 1
-    if self.current_delay <= 0:
-        var new_delay = self.DAS_DELAY
-        if self.das_flag == true:
-            new_delay = self.DAS
-        if self.move == 'left':
-            self.das_flag = true
-            self.current_delay = new_delay
-            if self._is_shape_movable(self.active_shape, -1, 0):
-                # self._move_shape(self.active_shape, -1, 0)
-                self._move_active_shape(-1)
-        elif self.move == 'right':
-            self.das_flag = true
-            self.current_delay = new_delay
-            if self._is_shape_movable(self.active_shape, 1, 0):
-                # self._move_shape(self.active_shape, 1, 0)
-                self._move_active_shape(1)
-    # process gravity
-    if down:
-        self.gravity_sum += max(0.4, self.gravity[self.level-1] * 1.5)
-    else:
-        self.gravity_sum += self.gravity[self.level-1]
-    if self.gravity_sum >= 1:
-        self._gravity()
+    return [up_press, down, space_press, escape]
+
+func _process_input_mobile():
+    var escape = Input.is_action_pressed("escape") # TODO: Provide some alternative to this
+    var left = mb.left
+    var left_press = mb.left_press
+    var left_release = mb.left_release
+    var right = mb.right
+    var right_press = mb.right_press
+    var right_release = mb.right_release
+    var up_press = mb.up_press
+    var down = mb.down
+    var space_press = mb.space_press
+    mb.input_processed = true
+    # work out logic of left/right movement
+    if left_press and not right_press:
+        self.move = 'left'
+    elif right_press and not left_press:
+        self.move = 'right'
+    if left_release:
+        self.das_flag = false
+        self.move = 'N/A'
+        if right:
+            self.move = 'right'
+    if right_release:
+        self.das_flag = false
+        self.move = 'N/A'
+        if left:
+            self.move = 'left'
+    return [up_press, down, space_press, escape]
 
 func _init_matrix():
     self.matrix = []

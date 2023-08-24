@@ -1,8 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://p84y8m2sl0ap"]
+[gd_scene load_steps=9 format=3 uid="uid://p84y8m2sl0ap"]
 
 [ext_resource type="Texture2D" uid="uid://thm5hbkgah7b" path="res://assets/playfield.png" id="1_bkmto"]
 [ext_resource type="Script" path="res://scripts/playfield.gd" id="1_tfsfn"]
+[ext_resource type="Theme" uid="uid://de2cpmhtvaddu" path="res://assets/mobile_controls.tres" id="4_4ybky"]
 [ext_resource type="FontFile" uid="uid://c53y8c0ehrf8e" path="res://assets/PixelMiddle.ttf" id="4_ef74j"]
+[ext_resource type="Texture2D" uid="uid://jtvbbrq6yjdf" path="res://assets/arrow2.png" id="5_occbv"]
+[ext_resource type="Script" path="res://scripts/mobile_buttons.gd" id="5_wtfum"]
+[ext_resource type="Texture2D" uid="uid://dhg8kd446wx1" path="res://assets/arrow1.png" id="6_svwlb"]
+[ext_resource type="Texture2D" uid="uid://c5bxujwdajoag" path="res://assets/arrow3.png" id="7_oac50"]
 
 [node name="Playfield" type="Node2D"]
 script = ExtResource("1_tfsfn")
@@ -115,3 +120,73 @@ theme_override_font_sizes/font_size = 16
 text = "hold"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Buttons" type="GridContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 22.0
+offset_top = 184.0
+offset_right = 174.0
+offset_bottom = 264.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("4_4ybky")
+columns = 3
+script = ExtResource("5_wtfum")
+
+[node name="BtnDrop" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(48, 38)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "D"
+
+[node name="BtnHold" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(48, 38)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "H"
+
+[node name="BtnRotate" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(48, 38)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+text = "R"
+
+[node name="BtnLeft" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(48, 38)
+layout_mode = 2
+icon = ExtResource("5_occbv")
+icon_alignment = 1
+
+[node name="BtnDown" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(48, 38)
+layout_mode = 2
+icon = ExtResource("6_svwlb")
+icon_alignment = 1
+
+[node name="BtnRight" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(48, 38)
+layout_mode = 2
+icon = ExtResource("7_oac50")
+icon_alignment = 1
+
+[connection signal="button_down" from="Buttons/BtnDrop" to="Buttons" method="_on_btn_drop_button_down"]
+[connection signal="button_up" from="Buttons/BtnDrop" to="Buttons" method="_on_btn_drop_button_up"]
+[connection signal="button_down" from="Buttons/BtnHold" to="Buttons" method="_on_btn_hold_button_down"]
+[connection signal="button_up" from="Buttons/BtnHold" to="Buttons" method="_on_btn_hold_button_up"]
+[connection signal="button_down" from="Buttons/BtnRotate" to="Buttons" method="_on_btn_rotate_button_down"]
+[connection signal="button_up" from="Buttons/BtnRotate" to="Buttons" method="_on_btn_rotate_button_up"]
+[connection signal="button_down" from="Buttons/BtnLeft" to="Buttons" method="_on_btn_left_button_down"]
+[connection signal="button_up" from="Buttons/BtnLeft" to="Buttons" method="_on_btn_left_button_up"]
+[connection signal="button_down" from="Buttons/BtnDown" to="Buttons" method="_on_btn_down_button_down"]
+[connection signal="button_up" from="Buttons/BtnDown" to="Buttons" method="_on_btn_down_button_up"]
+[connection signal="button_down" from="Buttons/BtnRight" to="Buttons" method="_on_btn_right_button_down"]
+[connection signal="button_up" from="Buttons/BtnRight" to="Buttons" method="_on_btn_right_button_up"]

@@ -10,7 +10,6 @@ func _ready():
 func _on_layout_button_pressed():
     var layout_button = $MainContainer/GridContainer/LayoutButton
     var text = layout_button.get_text()
-
     if text == 'desktop':
         layout_button.set_text('mobile')
         self.globals.current_layout = self.globals.LAYOUT.MOBILE
