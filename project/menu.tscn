@@ -50,6 +50,23 @@ focus_neighbor_bottom = NodePath("../StartButton")
 text = "high scores"
 flat = true
 
+[node name="PlatformLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -84.0
+offset_top = -17.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 16
+text = "platform:mobile"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="focus_entered" from="VBoxContainer/StartButton" to="." method="_on_start_button_focus_entered"]
 [connection signal="focus_exited" from="VBoxContainer/StartButton" to="." method="_on_start_button_focus_exited"]
 [connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
