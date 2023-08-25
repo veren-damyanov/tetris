@@ -3,6 +3,10 @@ extends Control
 func _ready():
     self._setup_theme()
     $VBoxContainer/StartButton.grab_focus()
+    var agent = JavaScriptBridge.eval("navigator.oscpu")
+    if agent == null:
+        agent = 'dev'
+    $PlatformLabel.set_text("platform: " + agent)
 
 func _setup_theme():
     var tn = globals.THEME_NAMES[globals.current_theme]
