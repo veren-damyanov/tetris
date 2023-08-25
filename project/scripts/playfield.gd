@@ -233,6 +233,16 @@ func _is_shape_movable(shape, dx, dy):
             return false
     return true
 
+func _is_shape_out(shape):
+    var matrix_pos = self._coords_from_position(shape.get_position())
+    var coords = shape.get_coords()
+    for v in coords:
+        var x = matrix_pos.x + v.x
+        var y = matrix_pos.y + v.y
+        if x < 1 or y < 1:
+            return true
+    return false
+
 func _move_shape(shape, dx, dy):
     var matrix_pos = self._coords_from_position(shape.get_position())
     matrix_pos.x += dx
@@ -250,7 +260,7 @@ func _gravity():
     if self._is_shape_movable(self.active_shape, 0, 1):
         self._move_shape(self.active_shape, 0, 1)
     else:
-        if self._coords_from_position(self.active_shape.get_position()) == self.START_POSITION:
+        if self._is_shape_out(self.active_shape):
             self.game_over = true
             $Text/GameOver.set_text("GAME OVER")
             return
