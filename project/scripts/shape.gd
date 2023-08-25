@@ -7,11 +7,13 @@ var size   # used for rotation
 var color
 
 func _ready():
-    globals = get_node("/root/globals")
+    globals = $'/root/globals'
     var blocks = self.get_children()
+    var texture = load('res://assets/' + globals.THEME_NAMES[globals.current_theme] + '/sprites/tile.png')
     for i in range(4):
         blocks[i].position = self.coords[i] * self.globals.TILE_SIZE
         blocks[i].get_node('Sprite2D').set_modulate(self.color)
+        blocks[i].get_node('Sprite2D').set_texture(texture)
 
 func init(type, coords, color):
     self.type = type

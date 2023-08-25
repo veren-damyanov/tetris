@@ -1,192 +1,191 @@
-[gd_scene load_steps=9 format=3 uid="uid://p84y8m2sl0ap"]
+[gd_scene load_steps=21 format=3 uid="uid://p84y8m2sl0ap"]
 
-[ext_resource type="Texture2D" uid="uid://thm5hbkgah7b" path="res://assets/playfield.png" id="1_bkmto"]
 [ext_resource type="Script" path="res://scripts/playfield.gd" id="1_tfsfn"]
-[ext_resource type="Theme" uid="uid://de2cpmhtvaddu" path="res://assets/mobile_controls.tres" id="4_4ybky"]
+[ext_resource type="Texture2D" uid="uid://b1ydi8i6c6fwk" path="res://assets/retro/sprites/playfield.png" id="2_ljqqo"]
+[ext_resource type="Texture2D" uid="uid://p75f8cfgw4q3" path="res://assets/classic/sprites/playfield-background.png" id="3_5vn8s"]
+[ext_resource type="Texture2D" uid="uid://ceeniu5wkbk2q" path="res://assets/retro/sprites/lamp1.png" id="3_l1glj"]
 [ext_resource type="FontFile" uid="uid://c53y8c0ehrf8e" path="res://assets/PixelMiddle.ttf" id="4_ef74j"]
-[ext_resource type="Texture2D" uid="uid://jtvbbrq6yjdf" path="res://assets/arrow2.png" id="5_occbv"]
+[ext_resource type="Theme" path="res://assets/classic/themes/buttons.tres" id="4_ouh05"]
 [ext_resource type="Script" path="res://scripts/mobile_buttons.gd" id="5_wtfum"]
-[ext_resource type="Texture2D" uid="uid://dhg8kd446wx1" path="res://assets/arrow1.png" id="6_svwlb"]
-[ext_resource type="Texture2D" uid="uid://c5bxujwdajoag" path="res://assets/arrow3.png" id="7_oac50"]
+[ext_resource type="Texture2D" uid="uid://gig6blnh1cd4" path="res://assets/classic/sprites/drop-pressed.png" id="6_giniq"]
+[ext_resource type="Texture2D" uid="uid://cypr04mo7w31q" path="res://assets/classic/sprites/hold-pressed.png" id="7_ytgo5"]
+[ext_resource type="Texture2D" uid="uid://wryogokcgsuw" path="res://assets/classic/sprites/rotate-pressed.png" id="8_uwly3"]
+[ext_resource type="Texture2D" uid="uid://deeqe5ec4qmk4" path="res://assets/classic/sprites/left-pressed.png" id="9_alnmn"]
+[ext_resource type="Texture2D" uid="uid://c1imxh7mebco8" path="res://assets/classic/sprites/down-pressed.png" id="10_teq2y"]
+[ext_resource type="Texture2D" uid="uid://uu7fm55vvkbu" path="res://assets/classic/sprites/right-pressed.png" id="11_xsyjq"]
+[ext_resource type="Theme" uid="uid://baedev3l5chn7" path="res://assets/classic/themes/text-general.tres" id="12_mtoqx"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2oqys"]
+texture = ExtResource("6_giniq")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2arna"]
+texture = ExtResource("7_ytgo5")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mtf0v"]
+texture = ExtResource("8_uwly3")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_twihm"]
+texture = ExtResource("9_alnmn")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_nxoiv"]
+texture = ExtResource("10_teq2y")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jxnwb"]
+texture = ExtResource("11_xsyjq")
 
 [node name="Playfield" type="Node2D"]
 script = ExtResource("1_tfsfn")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="PlayfieldSprite" type="Sprite2D" parent="."]
 z_index = 1
-texture = ExtResource("1_bkmto")
+texture = ExtResource("2_ljqqo")
 centered = false
 
-[node name="ScoreLabel" type="Label" parent="."]
-offset_left = 150.0
-offset_top = 14.0
-offset_right = 179.0
-offset_bottom = 31.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 16
-text = "Score"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Lamp1" type="Sprite2D" parent="PlayfieldSprite"]
+visible = false
+z_index = 1
+position = Vector2(98, 203)
+texture = ExtResource("3_l1glj")
+centered = false
 
-[node name="Score" type="Label" parent="."]
-offset_left = 150.0
-offset_top = 25.0
-offset_right = 180.0
-offset_bottom = 39.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 16
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Lamp2" type="Sprite2D" parent="PlayfieldSprite"]
+visible = false
+z_index = 1
+position = Vector2(104, 203)
+texture = ExtResource("3_l1glj")
+centered = false
 
-[node name="LevelLabel" type="Label" parent="."]
-offset_left = 150.0
-offset_top = 46.0
-offset_right = 179.0
-offset_bottom = 60.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 16
-text = "level"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Lamp3" type="Sprite2D" parent="PlayfieldSprite"]
+visible = false
+z_index = 1
+position = Vector2(110, 203)
+texture = ExtResource("3_l1glj")
+centered = false
 
-[node name="Level" type="Label" parent="."]
-offset_left = 150.0
-offset_top = 57.0
-offset_right = 179.0
-offset_bottom = 71.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 16
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Lamp4" type="Sprite2D" parent="PlayfieldSprite"]
+visible = false
+z_index = 1
+position = Vector2(116, 203)
+texture = ExtResource("3_l1glj")
+centered = false
 
-[node name="LinesLabel" type="Label" parent="."]
-offset_left = 150.0
-offset_top = 78.0
-offset_right = 179.0
-offset_bottom = 92.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 16
-text = "lines"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Lines" type="Label" parent="."]
-offset_left = 150.0
-offset_top = 89.0
-offset_right = 179.0
-offset_bottom = 103.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 16
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="GameOverLabel" type="Label" parent="."]
-z_index = 2
-offset_left = 21.0
-offset_top = 53.0
-offset_right = 171.0
-offset_bottom = 103.0
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 32
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="NextLabel" type="Label" parent="."]
-offset_left = 101.0
-offset_top = 14.0
-offset_right = 130.0
-offset_bottom = 31.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 16
-text = "next"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="HoldLabel" type="Label" parent="."]
-offset_left = 150.0
-offset_top = 118.0
-offset_right = 179.0
-offset_bottom = 135.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 16
-text = "hold"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="BackgroundSprite" type="Sprite2D" parent="."]
+z_index = -1
+texture = ExtResource("3_5vn8s")
+centered = false
 
 [node name="Buttons" type="GridContainer" parent="."]
+z_index = 2
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 22.0
-offset_top = 184.0
-offset_right = 174.0
-offset_bottom = 264.0
+offset_left = 10.0
+offset_top = 215.0
+offset_right = 134.0
+offset_bottom = 271.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset = Vector2(4, 0)
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme = ExtResource("4_4ybky")
+theme = ExtResource("4_ouh05")
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 4
 columns = 3
 script = ExtResource("5_wtfum")
 
-[node name="BtnDrop" type="Button" parent="Buttons"]
-custom_minimum_size = Vector2(48, 38)
+[node name="Drop" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(38, 26)
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-text = "D"
+theme_override_styles/pressed = SubResource("StyleBoxTexture_2oqys")
 
-[node name="BtnHold" type="Button" parent="Buttons"]
-custom_minimum_size = Vector2(48, 38)
+[node name="Hold" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(38, 26)
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-text = "H"
+theme_override_styles/pressed = SubResource("StyleBoxTexture_2arna")
 
-[node name="BtnRotate" type="Button" parent="Buttons"]
-custom_minimum_size = Vector2(48, 38)
+[node name="Rotate" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(38, 26)
 layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 4
-text = "R"
+theme_override_styles/pressed = SubResource("StyleBoxTexture_mtf0v")
 
-[node name="BtnLeft" type="Button" parent="Buttons"]
-custom_minimum_size = Vector2(48, 38)
+[node name="Left" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(38, 26)
 layout_mode = 2
-icon = ExtResource("5_occbv")
-icon_alignment = 1
+theme_override_styles/pressed = SubResource("StyleBoxTexture_twihm")
 
-[node name="BtnDown" type="Button" parent="Buttons"]
-custom_minimum_size = Vector2(48, 38)
+[node name="Down" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(38, 26)
 layout_mode = 2
-icon = ExtResource("6_svwlb")
-icon_alignment = 1
+theme_override_styles/pressed = SubResource("StyleBoxTexture_nxoiv")
 
-[node name="BtnRight" type="Button" parent="Buttons"]
-custom_minimum_size = Vector2(48, 38)
+[node name="Right" type="Button" parent="Buttons"]
+custom_minimum_size = Vector2(38, 26)
 layout_mode = 2
-icon = ExtResource("7_oac50")
-icon_alignment = 1
+theme_override_styles/pressed = SubResource("StyleBoxTexture_jxnwb")
 
-[connection signal="button_down" from="Buttons/BtnDrop" to="Buttons" method="_on_btn_drop_button_down"]
-[connection signal="button_up" from="Buttons/BtnDrop" to="Buttons" method="_on_btn_drop_button_up"]
-[connection signal="button_down" from="Buttons/BtnHold" to="Buttons" method="_on_btn_hold_button_down"]
-[connection signal="button_up" from="Buttons/BtnHold" to="Buttons" method="_on_btn_hold_button_up"]
-[connection signal="button_down" from="Buttons/BtnRotate" to="Buttons" method="_on_btn_rotate_button_down"]
-[connection signal="button_up" from="Buttons/BtnRotate" to="Buttons" method="_on_btn_rotate_button_up"]
-[connection signal="button_down" from="Buttons/BtnLeft" to="Buttons" method="_on_btn_left_button_down"]
-[connection signal="button_up" from="Buttons/BtnLeft" to="Buttons" method="_on_btn_left_button_up"]
-[connection signal="button_down" from="Buttons/BtnDown" to="Buttons" method="_on_btn_down_button_down"]
-[connection signal="button_up" from="Buttons/BtnDown" to="Buttons" method="_on_btn_down_button_up"]
-[connection signal="button_down" from="Buttons/BtnRight" to="Buttons" method="_on_btn_right_button_down"]
-[connection signal="button_up" from="Buttons/BtnRight" to="Buttons" method="_on_btn_right_button_up"]
+[node name="Text" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("12_mtoqx")
+
+[node name="GameOver" type="Label" parent="Text"]
+z_index = 2
+layout_mode = 0
+offset_top = 60.0
+offset_right = 144.0
+offset_bottom = 110.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("4_ef74j")
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Score" type="Label" parent="Text"]
+custom_minimum_size = Vector2(33, 15)
+layout_mode = 0
+offset_left = 10.0
+offset_top = 186.0
+offset_right = 43.0
+offset_bottom = 201.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Level" type="Label" parent="Text"]
+custom_minimum_size = Vector2(33, 15)
+layout_mode = 0
+offset_left = 55.0
+offset_top = 186.0
+offset_right = 88.0
+offset_bottom = 201.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Lines" type="Label" parent="Text"]
+custom_minimum_size = Vector2(33, 15)
+layout_mode = 0
+offset_left = 100.0
+offset_top = 186.0
+offset_right = 133.0
+offset_bottom = 201.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="button_down" from="Buttons/Drop" to="Buttons" method="_on_btn_drop_button_down"]
+[connection signal="button_up" from="Buttons/Drop" to="Buttons" method="_on_btn_drop_button_up"]
+[connection signal="button_down" from="Buttons/Hold" to="Buttons" method="_on_btn_hold_button_down"]
+[connection signal="button_up" from="Buttons/Hold" to="Buttons" method="_on_btn_hold_button_up"]
+[connection signal="button_down" from="Buttons/Rotate" to="Buttons" method="_on_btn_rotate_button_down"]
+[connection signal="button_up" from="Buttons/Rotate" to="Buttons" method="_on_btn_rotate_button_up"]
+[connection signal="button_down" from="Buttons/Left" to="Buttons" method="_on_btn_left_button_down"]
+[connection signal="button_up" from="Buttons/Left" to="Buttons" method="_on_btn_left_button_up"]
+[connection signal="button_down" from="Buttons/Down" to="Buttons" method="_on_btn_down_button_down"]
+[connection signal="button_up" from="Buttons/Down" to="Buttons" method="_on_btn_down_button_up"]
+[connection signal="button_down" from="Buttons/Right" to="Buttons" method="_on_btn_right_button_down"]
+[connection signal="button_up" from="Buttons/Right" to="Buttons" method="_on_btn_right_button_up"]

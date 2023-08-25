@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bmvwqcklkpm8q"]
+[gd_scene load_steps=4 format=3 uid="uid://bmvwqcklkpm8q"]
 
-[ext_resource type="Theme" uid="uid://e5uhj4dxwoy1" path="res://assets/menu_theme.tres" id="1_jumww"]
 [ext_resource type="Script" path="res://scripts/options.gd" id="1_ml1d5"]
+[ext_resource type="Theme" uid="uid://baedev3l5chn7" path="res://assets/classic/themes/text-general.tres" id="1_ug6c6"]
+[ext_resource type="Texture2D" uid="uid://b8826ygwbtttd" path="res://assets/classic/sprites/menu.png" id="3_ndydn"]
 
 [node name="Options" type="Control"]
 layout_mode = 3
@@ -10,7 +11,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_jumww")
+theme = ExtResource("1_ug6c6")
 script = ExtResource("1_ml1d5")
 
 [node name="MainContainer" type="VBoxContainer" parent="."]
@@ -30,13 +31,12 @@ grow_vertical = 2
 [node name="GridContainer" type="GridContainer" parent="MainContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
 columns = 2
 
 [node name="LayoutLabel" type="Button" parent="MainContainer/GridContainer"]
+z_index = 1
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 4
 size_flags_vertical = 4
 focus_mode = 0
 disabled = true
@@ -45,26 +45,42 @@ flat = true
 
 [node name="LayoutButton" type="Button" parent="MainContainer/GridContainer"]
 layout_mode = 2
-size_flags_horizontal = 8
+size_flags_horizontal = 0
 size_flags_vertical = 4
 focus_neighbor_top = NodePath("../../BackButton")
-focus_neighbor_bottom = NodePath("../../BackButton")
 text = "desktop"
+flat = true
+
+[node name="ThemeLabel" type="Button" parent="MainContainer/GridContainer"]
+z_index = 1
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+disabled = true
+text = "theme:"
+flat = true
+
+[node name="ThemeButton" type="Button" parent="MainContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+text = "classic"
 flat = true
 
 [node name="BackButton" type="Button" parent="MainContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-focus_neighbor_top = NodePath("../GridContainer/LayoutButton")
 focus_neighbor_bottom = NodePath("../GridContainer/LayoutButton")
 text = "back"
 flat = true
 
-[connection signal="pressed" from="MainContainer/GridContainer/LayoutLabel" to="." method="_on_layout_button_pressed"]
-[connection signal="focus_entered" from="MainContainer/GridContainer/LayoutButton" to="." method="_on_layout_button_focus_entered"]
-[connection signal="focus_exited" from="MainContainer/GridContainer/LayoutButton" to="." method="_on_layout_button_focus_exited"]
+[node name="MenuBackground" type="Sprite2D" parent="."]
+z_index = -1
+texture = ExtResource("3_ndydn")
+centered = false
+
 [connection signal="pressed" from="MainContainer/GridContainer/LayoutButton" to="." method="_on_layout_button_pressed"]
-[connection signal="focus_entered" from="MainContainer/BackButton" to="." method="_on_back_button_focus_entered"]
-[connection signal="focus_exited" from="MainContainer/BackButton" to="." method="_on_back_button_focus_exited"]
+[connection signal="pressed" from="MainContainer/GridContainer/ThemeButton" to="." method="_on_theme_button_pressed"]
 [connection signal="pressed" from="MainContainer/BackButton" to="." method="_on_back_button_pressed"]

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://thm5hbkgah7b"
-path="res://.godot/imported/playfield.png-280d9e7d208140a133021bbddab951da.ctex"
+uid="uid://cypr04mo7w31q"
+path="res://.godot/imported/hold-pressed.png-7feaab8861c98b79ed64d1c59b8192b4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/playfield.png"
-dest_files=["res://.godot/imported/playfield.png-280d9e7d208140a133021bbddab951da.ctex"]
+source_file="res://assets/classic/sprites/hold-pressed.png"
+dest_files=["res://.godot/imported/hold-pressed.png-7feaab8861c98b79ed64d1c59b8192b4.ctex"]
 
 [params]
 

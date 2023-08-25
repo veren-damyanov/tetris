@@ -24,7 +24,6 @@ class ShapeProvider:
     }
 
     var _queue
-    # var _active_shape_type
 
     func _init():
         self._queue = []
@@ -37,11 +36,10 @@ class ShapeProvider:
         var shape = preload("res://shape.tscn").instantiate()
         var type = self._queue.pop_front() # this is just the letter
         shape.init(type, self._shape_map[type], self._color_map[type])
-        # self._active_shape_type = shape.get_type()
+        # shape.init(type, self._shape_map[type], Color8(65, 255, 0, 200))
         return shape
     
     func get_ghost(active_shape_type):
         var shape = preload("res://shape.tscn").instantiate()
-        # var active_shape_type = self.get_parent()
         shape.init(active_shape_type, self._shape_map[active_shape_type], Color(1, 1, 1, 0.2))
         return shape

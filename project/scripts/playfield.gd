@@ -3,7 +3,7 @@ extends Node2D
 const DAS = 2          # Delayed Auto Shift in frames
 const DAS_DELAY = 10   # DAS delay in frames
 const START_POSITION = Vector2(5, 0)
-const NEXT_POSITION = Vector2(14, 5)
+const NEXT_POSITION = Vector2(14, 4)
 
 const ShapeProvider = preload("res://scripts/ShapeProvider.gd").ShapeProvider
 
@@ -19,7 +19,7 @@ var current_delay = 0  # frames until next input is legal
 var gravity = [
     0.01667, 0.021017, 0.026977, 0.035256, 0.04693,
     0.06361, 0.0879,0.1236, 0.1775, 0.2598, 0.388,
-    0.59, 0.92, 1.46, 2.36, 3.91, 6.61, 11.43, 20]
+    0.59, 0.92, 1.46, 2.36, 3.91, 6.61, 11.43, 20, 20]
 var gravity_sum = 0    # helper to keep track of gravity
 var game_over = false  # game over flag
 var score = 0          # tracks the score
@@ -34,27 +34,31 @@ func _ready():
     randomize()
     # initialize some things
     self.shape_provider = ShapeProvider.new()
-    self.globals = get_node("/root/globals")
+    self.globals = $'/root/globals'
     self._init_matrix()
+    self._setup_theme()
     # set up viewport according to the layout
-    print(globals.LAYOUT)
     match globals.current_layout:
         globals.LAYOUT.DESKTOP:
-            $'/root'.set_content_scale_size(Vector2i(192, 176))
+            $'/root'.set_content_scale_size(Vector2i(144, 215))
         globals.LAYOUT.MOBILE:
-            $'/root'.set_content_scale_size(Vector2i(192, 264))
+            $'/root'.set_content_scale_size(Vector2i(144, 279))
     # create new active shape
     self._setup_active_shape()
+    self._update_stats_visual(true, 0)
 
 func _process(delta):
+    var input = self._process_input()
     if self.game_over:
+        if input[2]:
+            self.get_tree().change_scene_to_file("res://menu.tscn")
+            $'/root'.set_content_scale_size(Vector2i(144, 279))
         return
     # update labels
-    self.get_node('Score').set_text("%d" % self.score)
-    self.get_node('Level').set_text("%d" % self.level)
-    self.get_node('Lines').set_text("%d" % self.lines)
+    $Text/Score.set_text("%d" % self.score)
+    $Text/Level.set_text("%d" % self.level)
+    $Text/Lines.set_text("%d" % self.lines)
     # collect input
-    var input = self._process_input()
     var up_press = input[0]
     var down = input[1]
     var space_press = input[2]
@@ -156,6 +160,17 @@ func _process_input_mobile():
             self.move = 'left'
     return [up_press, down, space_press, escape]
 
+func _setup_theme():
+    var tn = globals.THEME_NAMES[globals.current_theme]
+    $PlayfieldSprite.set_texture(load('res://assets/' + tn + '/sprites/playfield.png'))
+    $BackgroundSprite.set_texture(load('res://assets/' + tn + '/sprites/playfield-background.png'))
+    $Text.set_theme(load('res://assets/' + tn + '/themes/text-general.tres'))
+    $Buttons.set_theme(load('res://assets/' + tn + '/themes/buttons.tres'))
+    for btn in ['Drop', 'Hold', 'Rotate', 'Left', 'Down', 'Right']:
+        var stylebox = StyleBoxTexture.new()
+        stylebox.set_texture(load('res://assets/'+tn+'/sprites/'+btn.to_lower()+'-pressed.png'))
+        $Buttons.get_node(btn).add_theme_stylebox_override('pressed', stylebox)
+
 func _init_matrix():
     self.matrix = []
     for i in range(self.globals.FIELD_X+2):
@@ -229,7 +244,7 @@ func _gravity():
     else:
         if self._coords_from_position(self.active_shape.get_position()) == self.START_POSITION:
             self.game_over = true
-            self.get_node('GameOverLabel').set_text("GAME OVER")
+            $Text/GameOver.set_text("GAME OVER")
             return
         self._deactivate_current_shape()
         self._setup_active_shape()
@@ -317,9 +332,26 @@ func _settle_board(cleared_lines):
                 self._move_block(self.matrix[j][i][1], 0, q)
         await get_tree().create_timer(0.02).timeout
 
-func _update_stats(lines):
+func _update_stats_visual(new_level, cleared_lines):
+    if globals.current_theme != globals.THEME.RETRO:
+        return
+    for i in range(1, 5):
+        var status = false
+        if i <= cleared_lines:
+            status = true
+        $PlayfieldSprite.get_node('Lamp' + str(i)).visible = status
+    if new_level:
+        var cr = ColorRect.new()
+        cr.color = Color(Color8(65, 255, 0), 150/255.0)
+        cr.set_position(Vector2(50 + self.level*2, 205))
+        cr.set_size(Vector2(2, 2))
+        self.add_child(cr)
+
+func _update_stats(cleared_lines):
     var bases_map = { 1: 40, 2: 100, 3: 300, 4: 1200 }
-    var base = bases_map[lines.size()]
+    var base = bases_map[cleared_lines.size()]
     self.score += (self.level + 1) * base
-    self.lines += lines.size()
+    self.lines += cleared_lines.size()
+    var new_level = self.level < 1 + min(18, self.lines / 10)
     self.level = 1 + min(18, self.lines / 10)
+    self._update_stats_visual(new_level, cleared_lines.size())
