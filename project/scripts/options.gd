@@ -4,38 +4,29 @@ var globals
 
 
 func _ready():
-    self.globals = get_node("/root/globals")
-    var layout_button = $MainContainer/GridContainer/LayoutButton
-    layout_button.grab_focus()
-    match globals.current_layout:
-        globals.LAYOUT.DESKTOP:
-            layout_button.set_text('desktop')
-        globals.LAYOUT.MOBILE:
-            layout_button.set_text('mobile')
+    globals = get_node("/root/globals")
+    self._setup_theme()
+    self._setup_buttons()
+    $MainContainer/GridContainer/LayoutButton.grab_focus()
+
+
+func _setup_theme():
+    var tn = globals.THEME_NAMES[globals.current_theme]
+    $MenuBackground.set_texture(load('res://assets/' + tn + '/sprites/menu.png'))
+    self.theme = load('res://assets/' + tn + '/themes/text-general.tres')
+
+func _setup_buttons():
+    $MainContainer/GridContainer/LayoutButton.set_text(globals.LAYOUT_NAMES[globals.current_layout])
+    $MainContainer/GridContainer/ThemeButton.set_text(globals.THEME_NAMES[globals.current_theme])
 
 func _on_layout_button_pressed():
-    var layout_button = $MainContainer/GridContainer/LayoutButton
-    var text = layout_button.get_text()
-    if text == 'desktop':
-        layout_button.set_text('mobile')
-        self.globals.current_layout = self.globals.LAYOUT.MOBILE
-    elif text == 'mobile':
-        layout_button.set_text('desktop')
-        self.globals.current_layout = self.globals.LAYOUT.DESKTOP
-    else:
-        layout_button.set_text('ERROR!')
+    globals.increment_layout()
+    self._setup_buttons()
+
+func _on_theme_button_pressed():
+    globals.increment_theme()
+    self._setup_buttons()
+    self._setup_theme()
 
 func _on_back_button_pressed():
     self.get_tree().change_scene_to_file("res://menu.tscn")
-
-func _on_layout_button_focus_entered():
-    $MainContainer/GridContainer/LayoutButton.add_theme_constant_override("outline_size", 2)
-
-func _on_layout_button_focus_exited():
-    $MainContainer/GridContainer/LayoutButton.remove_theme_constant_override("outline_size")
-
-func _on_back_button_focus_entered():
-    $MainContainer/BackButton.add_theme_constant_override("outline_size", 2)
-
-func _on_back_button_focus_exited():
-    $MainContainer/BackButton.remove_theme_constant_override("outline_size")

@@ -13,7 +13,7 @@ var space_press = false
 var input_processed = false
 
 
-func _process(delta):
+func _process(_delta):
     if self.input_processed:
         if self.space_press:
             self.space_press = false
