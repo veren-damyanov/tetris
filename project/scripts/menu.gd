@@ -2,11 +2,10 @@ extends Control
 
 func _ready():
     $VBoxContainer/StartButton.grab_focus()
-    var model_name = OS.get_model_name()
-    $PlatformLabel.set_text("platform: " + model_name)
-    if model_name == 'GenericDevice':
-        $PlatformLabel.set_text('platform: desktop')
-
+    var agent = JavaScriptBridge.eval("navigator.oscpu")
+    if agent == null:
+        agent = 'dev'
+    $PlatformLabel.set_text("platform: " + agent)
 
 func _on_start_button_pressed():
     self.get_tree().change_scene_to_file("res://playfield.tscn")
