@@ -4,6 +4,7 @@ const DAS = 2          # Delayed Auto Shift in frames
 const DAS_DELAY = 10   # DAS delay in frames
 const START_POSITION = Vector2(5, 0)
 const NEXT_POSITION = Vector2(14, 4)
+const NEXT_OFFSET = 3
 
 const ShapeProvider = preload("res://scripts/ShapeProvider.gd").ShapeProvider
 
@@ -11,7 +12,7 @@ var globals            # for importing globals
 var matrix             # the board
 
 var active_shape       # the currently active (falling) shape
-var next_shape         # the currently scheduled "next" shape
+var next_shapes = []   # the currently scheduled "next" shape
 var ghost_shape        # the ghost of the current active shape
 
 var das_flag = false   # determines if DAS is active
@@ -37,6 +38,7 @@ func _ready():
     self.globals = $'/root/globals'
     self._init_matrix()
     self._setup_theme()
+    self.next_shapes
     # set up viewport according to the layout
     match globals.current_layout:
         globals.LAYOUT.DESKTOP:
@@ -192,21 +194,27 @@ func _position_from_coords(vector):
     var y = globals.TILE_SIZE / 2 + globals.TILE_SIZE * vector.y
     return Vector2(x, y)
 
-func _setup_next_shape():
-    var next = self.shape_provider.get_shape()
-    next.set_position(self._position_from_coords(self.NEXT_POSITION))
-    self.add_child(next)
-    self.next_shape = next
+func _update_next_shapes():
+    for i in range(self.next_shapes.size()):
+        var coords = Vector2(self.NEXT_POSITION.x, self.NEXT_POSITION.y + self.NEXT_OFFSET * i)
+        self.next_shapes[i].set_position(self._position_from_coords(coords))
+    while self.next_shapes.size() < 3:
+        var next = self.shape_provider.get_shape()
+        var coords = Vector2(self.NEXT_POSITION.x, self.NEXT_POSITION.y + self.NEXT_OFFSET * self.next_shapes.size())
+        next.set_position(self._position_from_coords(coords))
+        self.add_child(next)
+        self.next_shapes.append(next)
 
 func _setup_active_shape():
     # jumpstart the system when no next shape (start of game)
-    if self.next_shape == null:
-        self._setup_next_shape()
+    if self.next_shapes.size() < 3:
+        self._update_next_shapes()
     # move the "next" shape and make it active
-    self.next_shape.set_position(self._position_from_coords(self.START_POSITION))
-    self.active_shape = self.next_shape
+    var next = self.next_shapes.pop_front()
+    next.set_position(self._position_from_coords(self.START_POSITION))
+    self.active_shape = next
     # create new "next" shape
-    self._setup_next_shape()
+    self._update_next_shapes()
     # create and setup ghost of active_shape
     var ghost = self.shape_provider.get_ghost(self.active_shape.get_type())
     ghost.set_position(self._position_from_coords(self.START_POSITION))

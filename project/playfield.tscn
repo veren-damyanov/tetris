@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://p75f8cfgw4q3" path="res://assets/classic/sprites/playfield-background.png" id="3_5vn8s"]
 [ext_resource type="Texture2D" uid="uid://ceeniu5wkbk2q" path="res://assets/retro/sprites/lamp1.png" id="3_l1glj"]
 [ext_resource type="FontFile" uid="uid://c53y8c0ehrf8e" path="res://assets/PixelMiddle.ttf" id="4_ef74j"]
-[ext_resource type="Theme" path="res://assets/classic/themes/buttons.tres" id="4_ouh05"]
+[ext_resource type="Theme" uid="uid://dmfk8fkdacsha" path="res://assets/classic/themes/buttons.tres" id="4_ouh05"]
 [ext_resource type="Script" path="res://scripts/mobile_buttons.gd" id="5_wtfum"]
 [ext_resource type="Texture2D" uid="uid://gig6blnh1cd4" path="res://assets/classic/sprites/drop-pressed.png" id="6_giniq"]
 [ext_resource type="Texture2D" uid="uid://cypr04mo7w31q" path="res://assets/classic/sprites/hold-pressed.png" id="7_ytgo5"]
