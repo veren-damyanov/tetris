@@ -389,3 +389,9 @@ func _on_exit_button_pressed():
 func _on_request_completed(result, response_code, headers, body):
     globals.high_scores = []
     self.get_tree().change_scene_to_file("res://menu.tscn")
+
+func _on_name_input_focus_entered():
+    DisplayServer.virtual_keyboard_show("")
+
+func _on_name_input_focus_exited():
+    DisplayServer.virtual_keyboard_hide()
