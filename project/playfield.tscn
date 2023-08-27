@@ -208,6 +208,7 @@ placeholder_text = "name"
 max_length = 8
 context_menu_enabled = false
 shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
 selecting_enabled = false
 deselect_on_focus_loss_enabled = false
 flat = true

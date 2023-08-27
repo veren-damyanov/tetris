@@ -11,7 +11,7 @@ func _ready():
     if globals.high_scores == []:
         $HTTPRequest.request_completed.connect(_on_request_completed)
         $HTTPRequest.request("https://www.dreamlo.com/lb/64eb3a5c8f40bb0ee0660c0a/json/10")
-    else: 
+    else:
         self._display_scores()
 
 func _on_request_completed(result, response_code, headers, body):

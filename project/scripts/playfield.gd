@@ -67,9 +67,8 @@ func _process(delta):
     var down = input[1]
     var space_press = input[2]
     var escape = input[3]
-    # pause (this is probably not a permanent feature)
+    # pause (this is not a permanent feature)
     if escape:
-        self._update_stats([1])
         return
     # hard drop
     if space_press:
