@@ -1,11 +1,11 @@
 [gd_scene load_steps=21 format=3 uid="uid://p84y8m2sl0ap"]
 
 [ext_resource type="Script" path="res://scripts/playfield.gd" id="1_tfsfn"]
-[ext_resource type="Texture2D" uid="uid://b1ydi8i6c6fwk" path="res://assets/retro/sprites/playfield.png" id="2_ljqqo"]
+[ext_resource type="Texture2D" uid="uid://cgggpdwso22xv" path="res://assets/classic/sprites/playfield.png" id="2_i1x44"]
 [ext_resource type="Texture2D" uid="uid://p75f8cfgw4q3" path="res://assets/classic/sprites/playfield-background.png" id="3_5vn8s"]
 [ext_resource type="Texture2D" uid="uid://ceeniu5wkbk2q" path="res://assets/retro/sprites/lamp1.png" id="3_l1glj"]
 [ext_resource type="FontFile" uid="uid://c53y8c0ehrf8e" path="res://assets/PixelMiddle.ttf" id="4_ef74j"]
-[ext_resource type="Theme" uid="uid://dmfk8fkdacsha" path="res://assets/classic/themes/buttons.tres" id="4_ouh05"]
+[ext_resource type="Theme" uid="uid://8vya7rj7jkul" path="res://assets/retro/themes/buttons.tres" id="4_ouh05"]
 [ext_resource type="Script" path="res://scripts/mobile_buttons.gd" id="5_wtfum"]
 [ext_resource type="Texture2D" uid="uid://gig6blnh1cd4" path="res://assets/classic/sprites/drop-pressed.png" id="6_giniq"]
 [ext_resource type="Texture2D" uid="uid://cypr04mo7w31q" path="res://assets/classic/sprites/hold-pressed.png" id="7_ytgo5"]
@@ -13,7 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://deeqe5ec4qmk4" path="res://assets/classic/sprites/left-pressed.png" id="9_alnmn"]
 [ext_resource type="Texture2D" uid="uid://c1imxh7mebco8" path="res://assets/classic/sprites/down-pressed.png" id="10_teq2y"]
 [ext_resource type="Texture2D" uid="uid://uu7fm55vvkbu" path="res://assets/classic/sprites/right-pressed.png" id="11_xsyjq"]
-[ext_resource type="Theme" uid="uid://baedev3l5chn7" path="res://assets/classic/themes/text-general.tres" id="12_mtoqx"]
+[ext_resource type="Theme" uid="uid://dg1ee1vy8hq4" path="res://assets/retro/themes/general.tres" id="13_gwwoi"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2oqys"]
 texture = ExtResource("6_giniq")
@@ -38,7 +38,7 @@ script = ExtResource("1_tfsfn")
 
 [node name="PlayfieldSprite" type="Sprite2D" parent="."]
 z_index = 1
-texture = ExtResource("2_ljqqo")
+texture = ExtResource("2_i1x44")
 centered = false
 
 [node name="Lamp1" type="Sprite2D" parent="PlayfieldSprite"]
@@ -126,28 +126,15 @@ custom_minimum_size = Vector2(38, 26)
 layout_mode = 2
 theme_override_styles/pressed = SubResource("StyleBoxTexture_jxnwb")
 
-[node name="Text" type="Control" parent="."]
+[node name="Layout" type="Control" parent="."]
+custom_minimum_size = Vector2(144, 215)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-theme = ExtResource("12_mtoqx")
+theme = ExtResource("13_gwwoi")
 
-[node name="GameOver" type="Label" parent="Text"]
-z_index = 2
-layout_mode = 0
-offset_top = 60.0
-offset_right = 144.0
-offset_bottom = 110.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 2
-theme_override_fonts/font = ExtResource("4_ef74j")
-theme_override_font_sizes/font_size = 32
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Score" type="Label" parent="Text"]
+[node name="Score" type="Label" parent="Layout"]
 custom_minimum_size = Vector2(33, 15)
 layout_mode = 0
 offset_left = 10.0
@@ -157,7 +144,7 @@ offset_bottom = 201.0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Level" type="Label" parent="Text"]
+[node name="Level" type="Label" parent="Layout"]
 custom_minimum_size = Vector2(33, 15)
 layout_mode = 0
 offset_left = 55.0
@@ -167,7 +154,7 @@ offset_bottom = 201.0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Lines" type="Label" parent="Text"]
+[node name="Lines" type="Label" parent="Layout"]
 custom_minimum_size = Vector2(33, 15)
 layout_mode = 0
 offset_left = 100.0
@@ -176,6 +163,66 @@ offset_right = 133.0
 offset_bottom = 201.0
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Dialog" type="PanelContainer" parent="Layout"]
+visible = false
+z_index = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -48.0
+offset_right = 60.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="Layout/Dialog"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Container" type="VBoxContainer" parent="Layout/Dialog"]
+layout_mode = 2
+alignment = 1
+
+[node name="GameOverLabel" type="Label" parent="Layout/Dialog/Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("4_ef74j")
+theme_override_font_sizes/font_size = 24
+text = "game over"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NameInput" type="LineEdit" parent="Layout/Dialog/Container"]
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_neighbor_top = NodePath("../ExitButton")
+focus_neighbor_bottom = NodePath("../ExitButton")
+placeholder_text = "name"
+max_length = 8
+context_menu_enabled = false
+shortcut_keys_enabled = false
+selecting_enabled = false
+deselect_on_focus_loss_enabled = false
+flat = true
+caret_blink = true
+
+[node name="ExitButton" type="Button" parent="Layout/Dialog/Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+focus_neighbor_top = NodePath("../NameInput")
+focus_neighbor_bottom = NodePath("../NameInput")
+text = "exit"
+flat = true
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+timeout = 5.0
 
 [connection signal="button_down" from="Buttons/Drop" to="Buttons" method="_on_btn_drop_button_down"]
 [connection signal="button_up" from="Buttons/Drop" to="Buttons" method="_on_btn_drop_button_up"]
@@ -189,3 +236,4 @@ vertical_alignment = 1
 [connection signal="button_up" from="Buttons/Down" to="Buttons" method="_on_btn_down_button_up"]
 [connection signal="button_down" from="Buttons/Right" to="Buttons" method="_on_btn_right_button_down"]
 [connection signal="button_up" from="Buttons/Right" to="Buttons" method="_on_btn_right_button_up"]
+[connection signal="pressed" from="Layout/Dialog/Container/ExitButton" to="." method="_on_exit_button_pressed"]

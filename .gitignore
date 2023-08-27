@@ -1,4 +1,5 @@
 # Godot 4+ specific ignores
 project/.godot/
 project/.import
+project/scripts/secrets.gd
 build

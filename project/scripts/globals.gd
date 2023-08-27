@@ -11,7 +11,7 @@ enum THEME {CLASSIC = 0, RETRO = 1}
 
 var current_layout = LAYOUT.DESKTOP
 var current_theme = THEME.CLASSIC
-
+var high_scores = []
 
 func increment_layout():
     self.current_layout += 1
