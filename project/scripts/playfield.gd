@@ -9,6 +9,7 @@ const NEXT_OFFSET = 3
 const ShapeProvider = preload("res://scripts/ShapeProvider.gd").ShapeProvider
 
 var globals            # for importing globals
+var secrets            # for importing secrets
 var matrix             # the board
 
 var active_shape       # the currently active (falling) shape
@@ -36,6 +37,7 @@ func _ready():
     # initialize some things
     self.shape_provider = ShapeProvider.new()
     self.globals = $'/root/globals'
+    self.secrets = $'/root/secrets'
     self._init_matrix()
     self._setup_theme()
     self.next_shapes
@@ -52,14 +54,14 @@ func _ready():
 func _process(delta):
     var input = self._process_input()
     if self.game_over:
-        if input[2]:
-            self.get_tree().change_scene_to_file("res://menu.tscn")
-            $'/root'.set_content_scale_size(Vector2i(144, 279))
+#        if input[2]:
+#            self.get_tree().change_scene_to_file("res://menu.tscn")
+#            $'/root'.set_content_scale_size(Vector2i(144, 279))
         return
     # update labels
-    $Text/Score.set_text("%d" % self.score)
-    $Text/Level.set_text("%d" % self.level)
-    $Text/Lines.set_text("%d" % self.lines)
+    $Layout/Score.set_text("%d" % self.score)
+    $Layout/Level.set_text("%d" % self.level)
+    $Layout/Lines.set_text("%d" % self.lines)
     # collect input
     var up_press = input[0]
     var down = input[1]
@@ -67,6 +69,7 @@ func _process(delta):
     var escape = input[3]
     # pause (this is probably not a permanent feature)
     if escape:
+        self._update_stats([1])
         return
     # hard drop
     if space_press:
@@ -166,7 +169,7 @@ func _setup_theme():
     var tn = globals.THEME_NAMES[globals.current_theme]
     $PlayfieldSprite.set_texture(load('res://assets/' + tn + '/sprites/playfield.png'))
     $BackgroundSprite.set_texture(load('res://assets/' + tn + '/sprites/playfield-background.png'))
-    $Text.set_theme(load('res://assets/' + tn + '/themes/text-general.tres'))
+    $Layout.set_theme(load('res://assets/' + tn + '/themes/general.tres'))
     $Buttons.set_theme(load('res://assets/' + tn + '/themes/buttons.tres'))
     for btn in ['Drop', 'Hold', 'Rotate', 'Left', 'Down', 'Right']:
         var stylebox = StyleBoxTexture.new()
@@ -262,7 +265,8 @@ func _gravity():
     else:
         if self._is_shape_out(self.active_shape):
             self.game_over = true
-            $Text/GameOver.set_text("GAME OVER")
+            $Layout/Dialog.visible = true
+            $Layout/Dialog/Container/NameInput.grab_focus()
             return
         self._deactivate_current_shape()
         self._setup_active_shape()
@@ -373,3 +377,16 @@ func _update_stats(cleared_lines):
     var new_level = self.level < 1 + min(18, self.lines / 10)
     self.level = 1 + min(18, self.lines / 10)
     self._update_stats_visual(new_level, cleared_lines.size())
+
+func _on_exit_button_pressed():
+    var name = $Layout/Dialog/Container/NameInput.get_text()
+    # not saving if no secret token or no name
+    if secrets == null or name.length() < 1:
+        self.get_tree().change_scene_to_file("res://menu.tscn")
+        return
+    $HTTPRequest.request_completed.connect(_on_request_completed)
+    $HTTPRequest.request("http://dreamlo.com/lb/"+secrets.HTTP_TOKEN+"/add/"+name+"/"+str(self.score))
+
+func _on_request_completed(result, response_code, headers, body):
+    globals.high_scores = []
+    self.get_tree().change_scene_to_file("res://menu.tscn")

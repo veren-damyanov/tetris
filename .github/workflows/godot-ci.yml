@@ -24,6 +24,8 @@ env:
 
   DEPLOYMENT_BRANCH: gh-pages # the name of the branch, will be automatically created if it does not exist
 
+  HTTP_TOKEN: ${{ secrets.HTTP_TOKEN }}
+
 jobs:
   export_web:
     runs-on: ubuntu-latest
@@ -53,13 +55,18 @@ jobs:
         rm -R templates/
         rm templates.tpz
     
+    - name: Setup secret for leaderboard HTTP requests
+      run: |
+        echo "extends Node" > scripts/secrets.gd
+        echo "const HTTP_TOKEN='${HTTP_TOKEN}'" >> scripts/secrets.gd
+
     - name: Build Project
       run: |
         mkdir -v -p ${GITHUB_WORKSPACE}/${EXPORT_FOLDER}
         cd ${PROJECT_FOLDER}
         # Exporting the game
         ${GITHUB_WORKSPACE}/godot.x86_64 --headless --path . --export-${EXPORT_TEMPLATE} ${EXPORT_PRESET_NAME} ${GITHUB_WORKSPACE}/${EXPORT_FOLDER}/${EXPORT_FILENAME}
-    
+
 #    - name: Add coi-service-worker
 #      run: |
 #        git clone https://github.com/gzuidhof/coi-serviceworker.git

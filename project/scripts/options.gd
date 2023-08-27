@@ -13,7 +13,7 @@ func _ready():
 func _setup_theme():
     var tn = globals.THEME_NAMES[globals.current_theme]
     $MenuBackground.set_texture(load('res://assets/' + tn + '/sprites/menu.png'))
-    self.theme = load('res://assets/' + tn + '/themes/text-general.tres')
+    self.theme = load('res://assets/' + tn + '/themes/general.tres')
 
 func _setup_buttons():
     $MainContainer/GridContainer/LayoutButton.set_text(globals.LAYOUT_NAMES[globals.current_layout])

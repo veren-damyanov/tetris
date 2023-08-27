@@ -1,6 +1,7 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://baedev3l5chn7"]
+[gd_resource type="Theme" load_steps=6 format=3 uid="uid://baedev3l5chn7"]
 
 [ext_resource type="FontFile" uid="uid://c53y8c0ehrf8e" path="res://assets/PixelMiddle.ttf" id="1_4pvmh"]
+[ext_resource type="Texture2D" uid="uid://b4wsi4ht4lxci" path="res://assets/classic/sprites/panel.png" id="1_h85lb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_grcse"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -15,6 +16,21 @@ corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 expand_margin_left = 4.0
 expand_margin_right = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uy70n"]
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_acudm"]
+texture = ExtResource("1_h85lb")
 
 [resource]
 default_font = ExtResource("1_4pvmh")
@@ -31,3 +47,9 @@ Label/constants/line_spacing = 0
 Label/constants/shadow_offset_x = 0
 Label/constants/shadow_offset_y = 0
 Label/constants/shadow_outline_size = 0
+LineEdit/colors/caret_color = Color(0, 0, 0, 1)
+LineEdit/colors/font_color = Color(0, 0, 0, 1)
+LineEdit/colors/font_outline_color = Color(0, 0, 0, 1)
+LineEdit/colors/font_placeholder_color = Color(0, 0, 0, 0.627451)
+LineEdit/styles/focus = SubResource("StyleBoxFlat_uy70n")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_acudm")
