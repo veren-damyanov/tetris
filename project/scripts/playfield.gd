@@ -379,8 +379,8 @@ func _update_stats(cleared_lines):
 
 func _on_exit_button_pressed():
     var name = $Layout/Dialog/Container/NameInput.get_text()
-    # not saving if no secret token or no name
-    if secrets == null or name.length() < 1:
+    # not saving if dev, or no secret token, or no name
+    if globals.agent == 'dev' or secrets == null or name.length() < 1:
         self.get_tree().change_scene_to_file("res://menu.tscn")
         return
     $HTTPRequest.request_completed.connect(_on_request_completed)

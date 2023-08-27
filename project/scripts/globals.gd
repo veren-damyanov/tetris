@@ -9,6 +9,7 @@ const THEME_NAMES = {0: "classic", 1: "retro"}
 enum LAYOUT {DESKTOP = 0, MOBILE = 1}
 enum THEME {CLASSIC = 0, RETRO = 1}
 
+var agent = JavaScriptBridge.eval("navigator.oscpu")
 var current_layout = LAYOUT.DESKTOP
 var current_theme = THEME.CLASSIC
 var high_scores = []
@@ -22,3 +23,8 @@ func increment_theme():
     self.current_theme += 1
     if self.current_theme > 1:
         self.current_theme = 0
+
+func _ready():
+    if self.agent == null:
+        self.agent = 'dev'
+

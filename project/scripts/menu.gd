@@ -7,10 +7,7 @@ func _ready():
     globals = $'/root/globals'
     self._setup_theme()
     $VBoxContainer/StartButton.grab_focus()
-    var agent = JavaScriptBridge.eval("navigator.oscpu")
-    if agent == null:
-        agent = 'dev'
-    $PlatformLabel.set_text(agent)
+    $PlatformLabel.set_text(globals.agent)
 
 func _setup_theme():
     $'/root'.set_content_scale_size(Vector2i(144, 279))
