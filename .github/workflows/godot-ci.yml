@@ -57,7 +57,7 @@ jobs:
     
     - name: Setup secret for leaderboard HTTP requests
       run: |
-        echo "extends Node" > scripts/secrets.gd
+        echo "extends Node" > ${PROJECT_FOLDER}/scripts/secrets.gd
         echo "const HTTP_TOKEN='${HTTP_TOKEN}'" >> ${PROJECT_FOLDER}/scripts/secrets.gd
 
     - name: Build Project
