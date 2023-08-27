@@ -10,7 +10,7 @@ func _ready():
     # load by http only if necessary
     if globals.high_scores == []:
         $HTTPRequest.request_completed.connect(_on_request_completed)
-        $HTTPRequest.request("http://dreamlo.com/lb/64eb3a5c8f40bb0ee0660c0a/json/10")
+        $HTTPRequest.request("https://www.dreamlo.com/lb/64eb3a5c8f40bb0ee0660c0a/json/10")
     else: 
         self._display_scores()
 

@@ -385,7 +385,7 @@ func _on_exit_button_pressed():
         self.get_tree().change_scene_to_file("res://menu.tscn")
         return
     $HTTPRequest.request_completed.connect(_on_request_completed)
-    $HTTPRequest.request("http://dreamlo.com/lb/"+secrets.HTTP_TOKEN+"/add/"+name+"/"+str(self.score))
+    $HTTPRequest.request("https://www.dreamlo.com/lb/"+secrets.HTTP_TOKEN+"/add/"+name+"/"+str(self.score))
 
 func _on_request_completed(result, response_code, headers, body):
     globals.high_scores = []
