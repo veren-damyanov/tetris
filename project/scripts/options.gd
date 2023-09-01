@@ -1,14 +1,11 @@
 extends Control
 
-var globals
-
+@onready var globals = get_node("/root/globals")
 
 func _ready():
-    globals = get_node("/root/globals")
     self._setup_theme()
     self._setup_buttons()
     $MainContainer/GridContainer/LayoutButton.grab_focus()
-
 
 func _setup_theme():
     var tn = globals.THEME_NAMES[globals.current_theme]

@@ -12,7 +12,6 @@ var space_press = false
 # var escape = false
 var input_processed = false
 
-
 func _process(_delta):
     if self.input_processed:
         if self.space_press:

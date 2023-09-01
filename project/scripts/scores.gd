@@ -1,10 +1,9 @@
 extends Control
 
-var globals
-
+@onready var globals = $'/root/globals'
 
 func _ready():
-    globals = $'/root/globals'
+    # initialize theme and focus
     self._setup_theme()
     $MainContainer/BackButton.grab_focus()
     # load by http only if necessary
@@ -21,7 +20,7 @@ func _on_request_completed(result, response_code, headers, body):
             print('Something went wrong with the leaderboard request.')
             return
         var entries = json["dreamlo"]["leaderboard"]["entry"]
-        # somehow its not a list when there's only one record (!?)
+        # somehow entries is not a list when there's only one record (!?)
         if typeof(entries) == 27:
             globals.high_scores = [entries]
         else:
@@ -29,15 +28,14 @@ func _on_request_completed(result, response_code, headers, body):
         self._display_scores()
 
 func _display_scores():
-        print(globals.high_scores)
-        for rec in globals.high_scores:
-            var label_name = Label.new()
-            label_name.set_text(rec["name"])
-            $MainContainer/ScoresContainer.add_child(label_name)
-            var label_score = Label.new()
-            label_score.set_text(rec["score"])
-            label_score.set_h_size_flags(10)
-            $MainContainer/ScoresContainer.add_child(label_score)
+    for rec in globals.high_scores:
+        var label_name = Label.new()
+        label_name.set_text(rec["name"])
+        $MainContainer/ScoresContainer.add_child(label_name)
+        var label_score = Label.new()
+        label_score.set_text(rec["score"])
+        label_score.set_h_size_flags(10)
+        $MainContainer/ScoresContainer.add_child(label_score)
 
 func _setup_theme():
     var tn = globals.THEME_NAMES[globals.current_theme]

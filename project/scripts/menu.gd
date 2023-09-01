@@ -1,10 +1,8 @@
 extends Control
 
-var globals
-
+@onready var globals = $'/root/globals'
 
 func _ready():
-    globals = $'/root/globals'
     self._setup_theme()
     $VBoxContainer/StartButton.grab_focus()
     $PlatformLabel.set_text(globals.agent)
