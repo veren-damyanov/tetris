@@ -5,7 +5,7 @@ const FIELD_Y = 20 # y size of playfield in tiles
 const TILE_SIZE = 8 # size of one tile in pixels
 const LAYOUT_NAMES = {0: "desktop", 1: "mobile"}
 const THEME_NAMES = {0: "classic", 1: "retro"}
-const ANDROID_KEYWORDS = ['android', 'linux aarch64', 'linux armv7l', 'linux i686']
+const ANDROID_KEYWORDS = ['android', 'linux aarch64', 'linux armv7l', 'linux armv81', 'linux i686']
 const IOS_KEYWORDS = ['iphone', 'ipad', 'ipod']
 
 enum LAYOUT {DESKTOP = 0, MOBILE = 1}
@@ -41,3 +41,6 @@ func _ready():
         for word in IOS_KEYWORDS:
             if word in self.platform:
                 self.agent = 'iOS'
+
+    if self.agent == 'Android' or self.agent == 'iOS':
+        self.current_layout = LAYOUT.MOBILE
