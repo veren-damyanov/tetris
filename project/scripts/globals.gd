@@ -33,7 +33,8 @@ func _ready():
         self.agent = 'dev(?)'
     else:
         self.platform = self.platform.to_lower()
-        self.agent = 'Desktop'
+        # self.agent = 'Desktop'
+        self.agent = self.platform
         for word in ANDROID_KEYWORDS:
             if word in self.platform:
                 self.agent = 'Android'
