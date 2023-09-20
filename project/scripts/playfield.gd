@@ -4,6 +4,7 @@ const DAS = 2          # Delayed Auto Shift in frames
 const DAS_DELAY = 10   # DAS delay in frames
 const START_POSITION = Vector2(5, 0)
 const NEXT_POSITION = Vector2(14, 4)
+const HOLD_POSITION = Vector2(14, 19)
 const NEXT_OFFSET = 3
 const SP_CLASS = preload("res://scripts/shape_provider.gd").ShapeProvider
 
@@ -11,6 +12,7 @@ var _matrix             # the board
 var _active_shape       # the currently active (falling) shape
 var _ghost_shape        # the ghost of the current active shape
 var _next_shapes = []   # the currently scheduled "next" shapes
+var _hold_shape
 
 var _das_flag = false   # determines if DAS is active
 var _current_delay = 0  # frames until next input is legal
@@ -24,6 +26,7 @@ var _score = 0          # tracks the score
 var _lines = 0          # tracks number of lines completed
 var _level = 1          # tracks the level
 var _move = 'N/A'       # tracks direction of movement
+var _hold_ready = true  # tracks whether hold action is available
 
 @onready var globals = $'/root/globals'        # importing globals
 @onready var secrets = $'/root/secrets'        # importing secrets
@@ -46,9 +49,9 @@ func _ready():
     self._update_stats_visual(true, 0)
 
 func _process(delta):
-    var input = self._process_input()
     if self._game_over:
         return
+    var input = self._process_input()
     # update labels
     $Layout/Score.set_text("%d" % self._score)
     $Layout/Level.set_text("%d" % self._level)
@@ -57,7 +60,8 @@ func _process(delta):
     var up_press = input[0]
     var down = input[1]
     var space_press = input[2]
-    var escape = input[3]
+    var shift_press = input[3]
+    var escape = input[4]
     # pause (this is not a permanent feature)
     if escape:
         return
@@ -67,6 +71,9 @@ func _process(delta):
     # rotate
     if up_press:
         self._rotate_active_if_possible()
+    # hold
+    if shift_press and self._hold_ready:
+        self._hold()
     # left-right movement
     self._current_delay -= 1
     if self._current_delay <= 0:
@@ -108,6 +115,7 @@ func _process_input_desktop():
     var up_press = Input.is_action_just_pressed("up")
     var down = Input.is_action_pressed("down")
     var space_press = Input.is_action_just_pressed("space")
+    var shift_press = Input.is_action_just_pressed("shift")
     var escape = Input.is_action_pressed("escape")
     # work out logic of left/right movement
     if left_press and not right_press:
@@ -124,7 +132,7 @@ func _process_input_desktop():
         self._move = 'N/A'
         if left:
             self._move = 'left'
-    return [up_press, down, space_press, escape]
+    return [up_press, down, space_press, shift_press, escape]
 
 func _process_input_mobile():
     var escape = Input.is_action_pressed("escape") # TODO: Provide some alternative to this
@@ -137,6 +145,7 @@ func _process_input_mobile():
     var up_press = self._mobile_buttons.up_press
     var down = self._mobile_buttons.down
     var space_press = self._mobile_buttons.space_press
+    var shift_press = self._mobile_buttons.shift_press
     self._mobile_buttons.input_processed = true
     # work out logic of left/right movement
     if left_press and not right_press:
@@ -153,7 +162,7 @@ func _process_input_mobile():
         self._move = 'N/A'
         if left:
             self._move = 'left'
-    return [up_press, down, space_press, escape]
+    return [up_press, down, space_press, shift_press, escape]
 
 func _setup_theme():
     var tn = globals.THEME_NAMES[globals.current_theme]
@@ -208,7 +217,9 @@ func _setup_active_shape():
     self._active_shape = next
     # create new "next" shape
     self._update_next_shapes()
-    # create and setup ghost of active_shape
+    self._setup_ghost()
+
+func _setup_ghost():
     var ghost = self._shape_provider.get_ghost(self._active_shape.get_type())
     ghost.set_position(self._position_from_coords(self.START_POSITION))
     while(self._is_shape_movable(ghost, 0, 1)):
@@ -285,6 +296,27 @@ func _hard_drop():
         self._move_shape(self._active_shape, 0, 1)
     self._gravitate()
 
+func _hold():
+    if self._hold_shape:
+        # swap the objects
+        var active_position = self._active_shape.get_position()
+        var temp = self._active_shape
+        self._active_shape = self._hold_shape
+        self._hold_shape = temp
+        # swap their positions
+        self._hold_shape.set_position(self._position_from_coords(HOLD_POSITION))
+        self._active_shape.set_position(active_position)
+        self._ghost_shape.queue_free()
+        self._setup_ghost()
+    else:
+        # put active shape in hold and setup a new one
+        self._hold_shape = self._active_shape
+        self._active_shape = null
+        self._hold_shape.set_position(self._position_from_coords(HOLD_POSITION))
+        self._ghost_shape.queue_free()
+        self._setup_active_shape()
+    self._hold_ready = false
+
 func _deactivate_current_shape():
     var matrix_pos = self._coords_from_position(self._active_shape.get_position())
     var coords = self._active_shape.get_coords()
@@ -300,6 +332,7 @@ func _deactivate_current_shape():
     self._active_shape.queue_free()
     self._ghost_shape.queue_free()
     self._clear_lines()
+    self._hold_ready = true
 
 func _move_block(block, dx, dy):
     var v = self._coords_from_position(block.get_position())

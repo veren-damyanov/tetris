@@ -9,6 +9,7 @@ var right_release = false
 var up_press = false
 var down = false
 var space_press = false
+var shift_press = false
 # var escape = false
 var input_processed = false
 
@@ -16,6 +17,8 @@ func _process(_delta):
     if self.input_processed:
         if self.space_press:
             self.space_press = false
+        if self.shift_press:
+            self.shift_press = false
         if self.up_press:
             self.up_press = false
         if self.left_press:
@@ -35,7 +38,7 @@ func _on_btn_drop_button_up():
     pass # remove?
 
 func _on_btn_hold_button_down():
-    pass # TBI
+    self.shift_press = true
 
 func _on_btn_hold_button_up():
     pass # remove?
